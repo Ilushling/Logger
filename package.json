@@ -1,0 +1,25 @@
+{
+  "name": "mainlog",
+  "version": "1.0.0",
+  "description": "Logger",
+  "type": "module",
+  "author": "Ilushling",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": [
+    "logger"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ilushling/Logger.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Ilushling/Logger/issues"
+  },
+  "homepage": "https://github.com/Ilushling/Logger#readme",
+  "devDependencies": {
+    "@types/node": "^20.10.4"
+  }
+}
