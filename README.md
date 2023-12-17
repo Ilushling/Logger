@@ -15,10 +15,10 @@ Logger
 #### Import types
 ```js
 /**
- * @typedef {import('logger').LoggerParams} LoggerParams
- * @typedef {import('logger').Channel} LoggerChannel
- * @typedef {import('logger').Channels} LoggerChannels
- * @typedef {import('logger').Level} LoggerLevel
+ * @typedef {import('mainlog').LoggerParams} LoggerParams
+ * @typedef {import('mainlog').Channel} LoggerChannel
+ * @typedef {import('mainlog').Channels} LoggerChannels
+ * @typedef {import('mainlog').Level} LoggerLevel
  */
 ```
 
