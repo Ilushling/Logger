@@ -1,15 +1,18 @@
 # Logger
 Logger
 
-- [Usage](#usage)
+- [Usage](#usage).
 
 ## Usage
+1) [Prepare](#prepare);
+2) [Commands](#commands).
+
+### Prepare
 1) [(Optional) Import types](#import-types);
 2) [Prepare channel](#prepare-channel);
-3) [Create logger](#create-logger);
-4) [Call logger](#call-logger).
+3) [Create logger](#create-logger).
 
-### Import types
+#### Import types
 ```js
 /**
  * @typedef {import('logger').LoggerParams} LoggerParams
@@ -19,7 +22,7 @@ Logger
  */
 ```
 
-### Prepare channel
+#### Prepare channel
 ```js
 /** @type {LoggerChannel} */ 
 const consoleChannel = {
@@ -32,7 +35,7 @@ const consoleChannel = {
 };
 ```
 
-### Create logger
+#### Create logger
 ```js
 /** @type {LoggerChannels} */
 const channels = [consoleChannel];
@@ -47,7 +50,15 @@ const logger = new Logger({
 });
 ```
 
-### Call logger
+### Commands
+1) [Call logger](#call-logger).
+
+#### Call logger
 ```js
+logger.trace('Trace message');
+logger.debug('Debug message');
 logger.info('Info message');
+logger.warn('Warn message');
+logger.error('Error message');
+logger.fatal('Fatal message');
 ```
