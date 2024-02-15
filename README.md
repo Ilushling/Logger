@@ -42,11 +42,11 @@ const level = 'trace';
 
 /** @type {LoggerChannels} */
 const channels = {
-  consoleLogger: {
+  console: {
     channel: container.get('consoleLoggerChannel'),
     level
   },
-  consoleLogger2: {
+  console2: {
     channel: container.get('consoleLoggerChannel'),
     levels: ['trace', 'debug', 'info', 'warn', 'error', 'fatal']
   }

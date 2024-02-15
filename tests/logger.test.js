@@ -46,7 +46,7 @@ function createChannels(levels, level) {
   };
 
   return {
-    testChannel: {
+    test: {
       channel: testChannel,
       level,
       levels: ['trace', 'debug', 'info', 'warn', 'error', 'fatal']
