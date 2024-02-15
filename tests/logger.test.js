@@ -22,9 +22,42 @@ function createLogger(channels, level) {
   });
 }
 
+/**
+ * @param {{
+ *  trace: boolean,
+ *  debug: boolean,
+ *  info: boolean,
+ *  warn: boolean,
+ *  error: boolean,
+ *  fatal: boolean
+ * }} levels
+ * @param {Level} level
+ * @returns {Channels}
+ */
+function createChannels(levels, level) {
+  /** @type {Channel} */
+  const testChannel = {
+    trace: message => levels.trace = true,
+    debug: message => levels.debug = true,
+    info: message => levels.info = true,
+    warn: message => levels.warn = true,
+    error: message => levels.error = true,
+    fatal: message => levels.fatal = true
+  };
+
+  return {
+    testChannel: {
+      channel: testChannel,
+      level,
+      levels: ['trace', 'debug', 'info', 'warn', 'error', 'fatal']
+    }
+  };
+}
+
 describe('Logger', () => {
   describe('Levels', () => {
     it('all', async () => {
+      const level = 'all';
       const levels = {
         trace: false,
         debug: false,
@@ -34,21 +67,9 @@ describe('Logger', () => {
         fatal: false
       };
 
-      /** @type {Channel} */
-      const testChannel = {
-        trace: message => levels.trace = true,
-        debug: message => levels.debug = true,
-        info: message => levels.info = true,
-        warn: message => levels.warn = true,
-        error: message => levels.error = true,
-        fatal: message => levels.fatal = true
-      };
+      const channels = createChannels(levels, level);
 
-      const channels = [
-        testChannel
-      ];
-
-      const logger = createLogger(channels, 'all');
+      const logger = createLogger(channels, level);
 
       await logger.trace('trace');
       await logger.debug('debug');
@@ -68,6 +89,7 @@ describe('Logger', () => {
     });
 
     it('trace', async () => {
+      const level = 'trace';
       const levels = {
         trace: false,
         debug: false,
@@ -77,21 +99,9 @@ describe('Logger', () => {
         fatal: false
       };
 
-      /** @type {Channel} */
-      const testChannel = {
-        trace: message => levels.trace = true,
-        debug: message => levels.debug = true,
-        info: message => levels.info = true,
-        warn: message => levels.warn = true,
-        error: message => levels.error = true,
-        fatal: message => levels.fatal = true
-      };
+      const channels = createChannels(levels, level);
 
-      const channels = [
-        testChannel
-      ];
-
-      const logger = createLogger(channels, 'trace');
+      const logger = createLogger(channels, level);
 
       await logger.trace('trace');
       await logger.debug('debug');
@@ -111,6 +121,7 @@ describe('Logger', () => {
     });
 
     it('debug', async () => {
+      const level = 'debug';
       const levels = {
         trace: false,
         debug: false,
@@ -120,21 +131,9 @@ describe('Logger', () => {
         fatal: false
       };
 
-      /** @type {Channel} */
-      const testChannel = {
-        trace: message => levels.trace = true,
-        debug: message => levels.debug = true,
-        info: message => levels.info = true,
-        warn: message => levels.warn = true,
-        error: message => levels.error = true,
-        fatal: message => levels.fatal = true
-      };
+      const channels = createChannels(levels, level);
 
-      const channels = [
-        testChannel
-      ];
-
-      const logger = createLogger(channels, 'debug');
+      const logger = createLogger(channels, level);
 
       await logger.trace('trace');
       await logger.debug('debug');
@@ -154,6 +153,7 @@ describe('Logger', () => {
     });
 
     it('info', async () => {
+      const level = 'info';
       const levels = {
         trace: false,
         debug: false,
@@ -163,21 +163,9 @@ describe('Logger', () => {
         fatal: false
       };
 
-      /** @type {Channel} */
-      const testChannel = {
-        trace: message => levels.trace = true,
-        debug: message => levels.debug = true,
-        info: message => levels.info = true,
-        warn: message => levels.warn = true,
-        error: message => levels.error = true,
-        fatal: message => levels.fatal = true
-      };
+      const channels = createChannels(levels, level);
 
-      const channels = [
-        testChannel
-      ];
-
-      const logger = createLogger(channels, 'info');
+      const logger = createLogger(channels, level);
 
       await logger.trace('trace');
       await logger.debug('debug');
@@ -197,6 +185,7 @@ describe('Logger', () => {
     });
 
     it('warn', async () => {
+      const level = 'warn';
       const levels = {
         trace: false,
         debug: false,
@@ -206,21 +195,9 @@ describe('Logger', () => {
         fatal: false
       };
 
-      /** @type {Channel} */
-      const testChannel = {
-        trace: message => levels.trace = true,
-        debug: message => levels.debug = true,
-        info: message => levels.info = true,
-        warn: message => levels.warn = true,
-        error: message => levels.error = true,
-        fatal: message => levels.fatal = true
-      };
+      const channels = createChannels(levels, level);
 
-      const channels = [
-        testChannel
-      ];
-
-      const logger = createLogger(channels, 'warn');
+      const logger = createLogger(channels, level);
 
       await logger.trace('trace');
       await logger.debug('debug');
@@ -240,6 +217,7 @@ describe('Logger', () => {
     });
 
     it('error', async () => {
+      const level = 'error';
       const levels = {
         trace: false,
         debug: false,
@@ -249,21 +227,9 @@ describe('Logger', () => {
         fatal: false
       };
 
-      /** @type {Channel} */
-      const testChannel = {
-        trace: message => levels.trace = true,
-        debug: message => levels.debug = true,
-        info: message => levels.info = true,
-        warn: message => levels.warn = true,
-        error: message => levels.error = true,
-        fatal: message => levels.fatal = true
-      };
+      const channels = createChannels(levels, level);
 
-      const channels = [
-        testChannel
-      ];
-
-      const logger = createLogger(channels, 'error');
+      const logger = createLogger(channels, level);
 
       await logger.trace('trace');
       await logger.debug('debug');
@@ -283,6 +249,7 @@ describe('Logger', () => {
     });
 
     it('fatal', async () => {
+      const level = 'fatal';
       const levels = {
         trace: false,
         debug: false,
@@ -292,21 +259,9 @@ describe('Logger', () => {
         fatal: false
       };
 
-      /** @type {Channel} */
-      const testChannel = {
-        trace: message => levels.trace = true,
-        debug: message => levels.debug = true,
-        info: message => levels.info = true,
-        warn: message => levels.warn = true,
-        error: message => levels.error = true,
-        fatal: message => levels.fatal = true
-      };
+      const channels = createChannels(levels, level);
 
-      const channels = [
-        testChannel
-      ];
-
-      const logger = createLogger(channels, 'fatal');
+      const logger = createLogger(channels, level);
 
       await logger.trace('trace');
       await logger.debug('debug');
@@ -348,9 +303,13 @@ describe('Logger', () => {
           fatal: message => levels.fatal = true
         };
 
-        const channels = [
-          testChannel
-        ];
+        /** @type {Channels} */
+        const channels = {
+          testChannel: {
+            channel: testChannel,
+            levels: ['trace', 'debug', 'info', 'warn', 'error', 'fatal']
+          }
+        };
 
         const logger = createLogger(channels, 'all');
 

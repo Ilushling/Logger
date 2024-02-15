@@ -37,15 +37,23 @@ const consoleChannel = {
 
 #### Create logger
 ```js
-/** @type {LoggerChannels} */
-const channels = [consoleChannel];
-
 /** @type {LoggerLevel} */
-const level = 'info';
+const level = 'trace';
+
+/** @type {LoggerChannels} */
+const channels = {
+  consoleLogger: {
+    channel: container.get('consoleLoggerChannel'),
+    level
+  },
+  consoleLogger2: {
+    channel: container.get('consoleLoggerChannel'),
+    levels: ['trace', 'debug', 'info', 'warn', 'error', 'fatal']
+  }
+};
 
 const logger = new Logger({
   channels,
-
   level
 });
 ```
