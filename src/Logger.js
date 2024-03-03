@@ -153,9 +153,7 @@ export default class Logger {
     return this.#channels;
   }
 
-  /**
-   * @param {Channels} channels
-   */
+  /** @type {ILogger['setChannels']} */
   setChannels(channels) {
     this.#channels = channels;
   }
@@ -295,44 +293,32 @@ export default class Logger {
     await Promise.allSettled(promises);
   }
 
-  /**
-   * @type {ILogger['trace']}
-   */
+  /** @type {ILogger['trace']} */
   async trace(message) {
     await this.#log(message, this.#NUMBER_LEVELS.trace);
   }
 
-  /**
-   * @type {ILogger['debug']}
-   */
+  /** @type {ILogger['debug']} */
   async debug(message) {
     await this.#log(message, this.#NUMBER_LEVELS.debug);
   }
 
-  /**
-   * @type {ILogger['info']}
-   */
+  /** @type {ILogger['info']} */
   async info(message) {
     await this.#log(message, this.#NUMBER_LEVELS.info);
   }
 
-  /**
-   * @type {ILogger['warn']}
-   */
+  /** @type {ILogger['warn']} */
   async warn(message) {
     await this.#log(message, this.#NUMBER_LEVELS.warn);
   }
 
-  /**
-   * @type {ILogger['error']}
-   */
+  /** @type {ILogger['error']} */
   async error(message) {
     await this.#log(message, this.#NUMBER_LEVELS.error);
   }
 
-  /**
-   * @type {ILogger['fatal']}
-   */
+  /** @type {ILogger['fatal']} */
   async fatal(message) {
     await this.#log(message, this.#NUMBER_LEVELS.fatal);
   }
