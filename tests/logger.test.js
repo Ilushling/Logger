@@ -4,10 +4,9 @@ import { describe, it } from 'node:test';
 import Logger from '../src/Logger.js';
 
 /**
- * @typedef {import('../src/Logger.js').LoggerParams} LoggerParams
- * @typedef {import('../src/Logger.js').Channel} Channel
- * @typedef {import('../src/Logger.js').Channels} Channels
- * @typedef {import('../src/Logger.js').Level} Level
+ * @typedef {import('../src/ILogger.js').Channel} Channel
+ * @typedef {import('../src/ILogger.js').Channels} Channels
+ * @typedef {import('../src/ILogger.js').Level} Level
  */
 
 /**
@@ -15,11 +14,22 @@ import Logger from '../src/Logger.js';
  * @param {Level} level
  */
 function createLogger(channels, level) {
-  return new Logger({
-    channels,
-
-    level
+  const logger = new Logger({
+    channels
   });
+
+  logger.setup({
+    configs: {
+      level,
+      channels: {
+        test: {
+          level
+        }
+      }
+    }
+  });
+
+  return logger;
 }
 
 /**
@@ -31,10 +41,9 @@ function createLogger(channels, level) {
  *  error: boolean,
  *  fatal: boolean
  * }} levels
- * @param {Level} level
  * @returns {Channels}
  */
-function createChannels(levels, level) {
+function createChannels(levels) {
   /** @type {Channel} */
   const testChannel = {
     trace: message => levels.trace = true,
@@ -46,11 +55,7 @@ function createChannels(levels, level) {
   };
 
   return {
-    test: {
-      channel: testChannel,
-      level,
-      levels: ['trace', 'debug', 'info', 'warn', 'error', 'fatal']
-    }
+    test: testChannel
   };
 }
 
@@ -67,8 +72,7 @@ describe('Logger', () => {
         fatal: false
       };
 
-      const channels = createChannels(levels, level);
-
+      const channels = createChannels(levels);
       const logger = createLogger(channels, level);
 
       await logger.trace('trace');
@@ -99,7 +103,7 @@ describe('Logger', () => {
         fatal: false
       };
 
-      const channels = createChannels(levels, level);
+      const channels = createChannels(levels);
 
       const logger = createLogger(channels, level);
 
@@ -131,7 +135,7 @@ describe('Logger', () => {
         fatal: false
       };
 
-      const channels = createChannels(levels, level);
+      const channels = createChannels(levels);
 
       const logger = createLogger(channels, level);
 
@@ -163,7 +167,7 @@ describe('Logger', () => {
         fatal: false
       };
 
-      const channels = createChannels(levels, level);
+      const channels = createChannels(levels);
 
       const logger = createLogger(channels, level);
 
@@ -195,7 +199,7 @@ describe('Logger', () => {
         fatal: false
       };
 
-      const channels = createChannels(levels, level);
+      const channels = createChannels(levels);
 
       const logger = createLogger(channels, level);
 
@@ -227,7 +231,7 @@ describe('Logger', () => {
         fatal: false
       };
 
-      const channels = createChannels(levels, level);
+      const channels = createChannels(levels);
 
       const logger = createLogger(channels, level);
 
@@ -259,7 +263,7 @@ describe('Logger', () => {
         fatal: false
       };
 
-      const channels = createChannels(levels, level);
+      const channels = createChannels(levels);
 
       const logger = createLogger(channels, level);
 
@@ -284,6 +288,7 @@ describe('Logger', () => {
   describe('Level', () => {
     describe('Set', () => {
       it('info', async () => {
+        const level = 'fatal';
         const levels = {
           trace: false,
           debug: false,
@@ -305,15 +310,16 @@ describe('Logger', () => {
 
         /** @type {Channels} */
         const channels = {
-          testChannel: {
-            channel: testChannel,
-            levels: ['trace', 'debug', 'info', 'warn', 'error', 'fatal']
-          }
+          test: testChannel
         };
 
-        const logger = createLogger(channels, 'all');
+        const logger = createLogger(channels, level);
 
-        logger.setLevel('info');
+        const newLevel = 'info';
+        logger.setLevel(newLevel);
+        logger.setChannelConfigs('test', {
+          level: newLevel
+        });
 
         await logger.trace('trace');
         await logger.debug('debug');

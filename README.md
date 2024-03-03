@@ -15,7 +15,6 @@ Logger
 #### Import types
 ```js
 /**
- * @typedef {import('mainlog').LoggerParams} LoggerParams
  * @typedef {import('mainlog').Channel} LoggerChannel
  * @typedef {import('mainlog').Channels} LoggerChannels
  * @typedef {import('mainlog').Level} LoggerLevel
@@ -39,22 +38,50 @@ const consoleChannel = {
 ```js
 /** @type {LoggerLevel} */
 const level = 'trace';
+const levels = ['trace', 'debug', 'info', 'warn', 'error', 'fatal'];
 
 /** @type {LoggerChannels} */
 const channels = {
-  console: {
-    channel: container.get('consoleLoggerChannel'),
-    level
-  },
-  console2: {
-    channel: container.get('consoleLoggerChannel'),
-    levels: ['trace', 'debug', 'info', 'warn', 'error', 'fatal']
-  }
+  console: container.get('consoleLoggerChannel'),
+  console2: container.get('console2LoggerChannel')
 };
 
 const logger = new Logger({
-  channels,
+  channels
+});
+
+logger.setup({
+  configs: {
+    level,
+    channels: {
+      console: {
+        level
+      },
+      console2: {
+        levels
+      }
+    }
+  }
+});
+
+// or
+logger.setLevels(levels);
+logger.setChannelsConfigs({
+  channel: {
+    level
+  },
+  channel2: {
+    levels
+  }
+});
+
+// or
+logger.setLevel(level);
+logger.setChannelConfigs('console', {
   level
+});
+logger.setChannelConfigs('console2', {
+  levels
 });
 ```
 

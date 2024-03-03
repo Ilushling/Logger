@@ -1,49 +1,42 @@
 /**
- * @typedef {{
- *  trace: (message: any) => any,
- *  debug: (message: any) => any,
- *  info: (message: any) => any,
- *  warn: (message: any) => any,
- *  error: (message: any) => any,
- *  fatal: (message: any) => any
- * }} Channel
+ * @typedef {import('./ILogger.js').Channel} Channel
+ * @typedef {import('./ILogger.js').Channels} Channels
  * 
- * @typedef {{
- *  channel: Channel,
- *  level?: Level,
- *  levels?: Level[]
- * }} ChannelParams
- * 
- * @typedef {Record<string, ChannelParams>} Channels
+ * @typedef {import('./ILogger.js').ChannelConfigsParams} ChannelConfigsParams
+ * @typedef {import('./ILogger.js').ChannelsConfigsParams} ChannelsConfigsParams
  */
 
 /**
- * @typedef {'all'|StringLevel|'off'} Level
+ * @typedef {import('./ILogger.js').Level} Level
+ * @typedef {import('./ILogger.js').StringLevel} StringLevel
+ * @typedef {import('./ILogger.js').NumberLevel} NumberLevel
  */
 
 /**
- * @typedef {object} LoggerParams
- * @property {Channels=} channels
- * 
- * @property {Level=} level
+ * @typedef {import('./ILogger.js').LoggerConfigsParams} LoggerConfigsParams
+ * @typedef {import('./ILogger.js').LoggerProperties} LoggerProperties
+ * @typedef {import('./ILogger.js').LoggerParams} LoggerParams
+ */
+
+/**
+ * @typedef {import('./ILogger.js').ILogger} ILogger
+ * @implements {ILogger}
  */
 export default class Logger {
-  /**
-   * @typedef {'trace'|'debug'|'info'|'warn'|'error'|'fatal'} StringLevel
-   * @typedef {1|2|3|4|5|6} NumberLevel
-   */
-
-  /** @type {Channels=} */
+  // Dependencies
+  /** @type {LoggerProperties['channels']} */
   #channels;
 
-  /** @type {StringLevel=} */
-  // #stringLevel;
+  // Configs
+  /** @type {LoggerProperties['levels']} */
+  #levels;
 
-  /** @type {NumberLevel=} */
-  #numberLevel;
+  /** @type {LoggerProperties['channelsConfigs']} */
+  #channelsConfigs;
 
+  // Const
   /** @type {Record<StringLevel, NumberLevel>} */
-  #numberLevels = {
+  #NUMBER_LEVELS = {
     trace: 1,
     debug: 2,
     info: 3,
@@ -53,7 +46,7 @@ export default class Logger {
   };
 
   /** @type {Record<NumberLevel, StringLevel>} */
-  #stringLevels = {
+  #STRING_LEVELS = {
     1: 'trace',
     2: 'debug',
     3: 'info',
@@ -63,7 +56,7 @@ export default class Logger {
   };
 
   /** @type {Level[]} */
-  #levels = [
+  #LEVELS = [
     'all',
     'trace',
     'debug',
@@ -76,55 +69,85 @@ export default class Logger {
 
   /** @param {LoggerParams} params */
   constructor({
-    channels,
-
-    level = 'off'
-  } = {}) {
+    channels
+  }) {
     this.#channels = channels;
 
-    this.setLevel(level);
+    this.#levels = [];
+    this.#channelsConfigs = Object.keys(channels).reduce((acc, name) => {
+      acc[name] = {
+        levels: []
+      };
+
+      return acc;
+    }, /** @type {LoggerProperties['channelsConfigs']} */({}));
   }
 
-  /**
-   * @param {Level} level
-   */
-  setLevel(level) {
-    const levels = this.#levels;
-
-    if (typeof level !== 'string' || !levels.includes(level)) {
-      this.#throwInvalidLevelError(level);
+  /** @type {ILogger['setup']} */
+  setup({ configs }) {
+    if (configs.level != null) {
+      this.setLevel(configs.level);
+    } else if (configs.levels != null) {
+      this.setLevels(configs.levels);
     }
 
-    if (level === 'off') {
-      // this.#stringLevel = undefined;
-      this.#numberLevel = undefined;
+    if (configs.channels != null) {
+      this.setChannelsConfigs(configs.channels);
+    }
+  }
+
+  getLevels() {
+    return this.#levels;
+  }
+
+  /** @type {ILogger['setLevel']} */
+  setLevel(level) {
+    const LEVELS = this.#LEVELS;
+
+    if (!LEVELS.includes(level)) {
+      throw this.#createInvalidLevelError(level);
+    }
+
+    const currentLevels = this.#levels;
+    currentLevels.length = 0;
+
+    const numberLevel = this.#levelToNumber(level);
+
+    if (numberLevel == null) {
       return;
     }
 
-    const stringLevel = level === 'all' ? 'trace' : level;
-
-    // this.#stringLevel = stringLevel;
-    this.#numberLevel = this.#stringLevelToNumber(stringLevel);
+    /** @type {NumberLevel} */
+    let i = numberLevel;
+    for (i = numberLevel; i < 7; i++) {
+      currentLevels.push(i);
+    }
   }
 
-  #getNumberLevel() {
-    return this.#numberLevel;
-  }
+  /** @type {ILogger['setLevels']} */
+  setLevels(levels) {
+    const NUMBER_LEVELS = this.#NUMBER_LEVELS;
 
-  /**
-   * @param {StringLevel} level
-   */
-  #stringLevelToNumber(level) {
-    return this.#numberLevels[level];
-  }
+    levels.forEach(level => {
+      if (!(level in NUMBER_LEVELS)) {
+        throw this.#createInvalidLevelError(level);
+      }
+    });
 
-  /**
-   * @param {NumberLevel} level
-   */
-  #numberLevelToString(level) {
-    return this.#stringLevels[level];
-  }
+    const currentLevels = this.#levels;
+    currentLevels.length = 0;
 
+    if (levels.length === 0) {
+      return;
+    }
+
+    for (let i = 0, count = levels.length; i < count; i++) {
+      const stringLevel = levels[i];
+      const numberLevel = this.#stringLevelToNumber(stringLevel);
+
+      currentLevels.push(numberLevel);
+    }
+  }
 
   #getChannels() {
     return this.#channels;
@@ -137,72 +160,112 @@ export default class Logger {
     this.#channels = channels;
   }
 
-  /**
-   * @param {string} channelName
-   */
-  #getChannel(channelName) {
-    const channels = this.#getChannels();
-    if (channels == null) {
-      return;
+  /** @type {ILogger['setChannelConfigs']} */
+  setChannelConfigs(channelName, channelConfigs) {
+    const currentChannelsConfigs = this.#channelsConfigs;
+
+    if (currentChannelsConfigs[channelName] == null) {
+      currentChannelsConfigs[channelName] = {
+        levels: []
+      };
     }
 
-    return channels[channelName];
-  }
+    const currentChannelConfigs = currentChannelsConfigs[channelName];
 
-  /**
-   * @param {string} channelName
-   * @param {Level} level
-   */
-  setChannelLevel(channelName, level) {
-    const validLevels = this.#levels;
-
-    if (typeof level !== 'string' || !validLevels.includes(level)) {
-      this.#throwInvalidLevelError(level);
+    if (currentChannelConfigs.levels == null) {
+      currentChannelConfigs.levels = [];
     }
 
-    const channel = this.#getChannel(channelName);
+    const currentChannelLevels = currentChannelConfigs.levels;
 
-    if (channel == null) {
-      return;
-    }
+    currentChannelLevels.length = 0;
 
-    channel.level = level;
-  }
+    const channelLevel = channelConfigs.level;
+    const channelLevels = channelConfigs.levels;
+    if (channelLevel != null) {
+      const LEVELS = this.#LEVELS;
 
-  /**
-   * @param {string} channelName
-   * @param {Level[]} levels
-   */
-  setChannelLevels(channelName, levels) {
-    const validLevels = this.#levels;
+      if (!LEVELS.includes(channelLevel)) {
+        throw this.#createInvalidLevelError(channelLevel);
+      }
 
-    for (const level of levels) {
-      if (typeof level !== 'string' || !validLevels.includes(level)) {
-        this.#throwInvalidLevelError(level);
+      const numberLevel = this.#levelToNumber(channelLevel);
+
+      if (numberLevel == null) {
+        return;
+      }
+
+      /** @type {NumberLevel} */
+      let i = numberLevel;
+      for (i = numberLevel; i < 7; i++) {
+        currentChannelLevels.push(i);
+      }
+    } else if (channelLevels != null) {
+      for (let i = 0, count = channelLevels.length; i < count; i++) {
+        const stringLevel = channelLevels[i];
+        const numberLevel = this.#stringLevelToNumber(stringLevel);
+
+        currentChannelLevels.push(numberLevel);
       }
     }
+  }
 
-    const channel = this.#getChannel(channelName);
+  /** @type {ILogger['setChannelsConfigs']} */
+  setChannelsConfigs(channelsConfigs) {
+    for (const channelName in channelsConfigs) {
+      const channelConfigs = channelsConfigs[channelName];
 
-    if (channel == null) {
+      this.setChannelConfigs(channelName, channelConfigs)
+    }
+  }
+
+  /**
+   * @param {StringLevel} level
+   */
+  #stringLevelToNumber(level) {
+    return this.#NUMBER_LEVELS[level];
+  }
+
+  /**
+   * @param {NumberLevel} level
+   */
+  #numberLevelToString(level) {
+    return this.#STRING_LEVELS[level];
+  }
+
+  /**
+   * @param {Level} level
+   */
+  #levelToNumber(level) {
+    const stringLevel = level === 'all' ? 'trace' : level;
+
+    if (stringLevel === 'off') {
       return;
     }
 
-    channel.levels = levels;
+    return this.#NUMBER_LEVELS[stringLevel];
   }
 
+  /**
+   * @param {Level|NumberLevel} level
+   */
+  #createInvalidLevelError(level) {
+    const LEVELS = this.#LEVELS;
+
+    const levelsMessage = LEVELS.map(level => `'${level}'`).join(', ');
+
+    return Object.assign(new Error(`Level must be: ${levelsMessage}`), {
+      name: 'InvalidLevelError'
+    });
+  }
 
   /**
    * @param {unknown} message
    * @param {NumberLevel} numberLevel
    */
   async #log(message, numberLevel) {
-    const currentNumberLevel = this.#getNumberLevel();
-    if (currentNumberLevel == null) {
-      return;
-    }
-
-    if (numberLevel < currentNumberLevel) {
+    const currentLevels = this.#levels;
+    if (!currentLevels.includes(numberLevel)) {
       return;
     }
 
@@ -213,89 +276,64 @@ export default class Logger {
 
     const stringLevel = this.#numberLevelToString(numberLevel);
 
-    let promises = [];
+    const promises = [];
 
     /** @type {keyof typeof channels} */
-    let key;
-    for (key in channels) {
-      const channel = channels[key];
+    let channelName;
+    for (channelName in channels) {
+      const channel = channels[channelName];
+      const channelConfigs = this.#channelsConfigs[channelName];
 
-      let channelLevel = channel.level;
-
-      if (channelLevel != null) {
-        if (channelLevel === 'off') {
-          continue;
-        }
-
-        const channelStringLevel = channelLevel === 'all' ? 'trace' : channelLevel;
-
-        const channelNumberLevel = this.#stringLevelToNumber(channelStringLevel);
-
-        if (numberLevel < channelNumberLevel) {
-          continue;
-        }
-      } else if (!channel.levels?.includes(stringLevel)) {
+      const channelLevels = channelConfigs.levels;
+      if (!channelLevels.includes(numberLevel)) {
         continue;
       }
 
-      promises.push(channel.channel[stringLevel](message));
+      promises.push(channel[stringLevel](message));
     }
 
     await Promise.allSettled(promises);
   }
 
   /**
-   * @param {unknown} message
+   * @type {ILogger['trace']}
    */
   async trace(message) {
-    await this.#log(message, this.#numberLevels.trace);
+    await this.#log(message, this.#NUMBER_LEVELS.trace);
   }
 
   /**
-   * @param {unknown} message
+   * @type {ILogger['debug']}
    */
   async debug(message) {
-    await this.#log(message, this.#numberLevels.debug);
+    await this.#log(message, this.#NUMBER_LEVELS.debug);
   }
 
   /**
-   * @param {unknown} message
+   * @type {ILogger['info']}
    */
   async info(message) {
-    await this.#log(message, this.#numberLevels.info);
+    await this.#log(message, this.#NUMBER_LEVELS.info);
   }
 
   /**
-   * @param {unknown} message
+   * @type {ILogger['warn']}
    */
   async warn(message) {
-    await this.#log(message, this.#numberLevels.warn);
+    await this.#log(message, this.#NUMBER_LEVELS.warn);
   }
 
   /**
-   * @param {unknown} message
+   * @type {ILogger['error']}
    */
   async error(message) {
-    await this.#log(message, this.#numberLevels.error);
+    await this.#log(message, this.#NUMBER_LEVELS.error);
   }
 
   /**
-   * @param {unknown} message
+   * @type {ILogger['fatal']}
    */
   async fatal(message) {
-    await this.#log(message, this.#numberLevels.fatal);
-  }
-
-  /**
-   * @param {string} level
-   */
-  #throwInvalidLevelError(level) {
-    const levels = this.#levels;
-
-    const levelsMessage = levels.map(level => `'${level}'`).join(', ');
-
-    throw Object.assign(new Error(`Level must be: ${levelsMessage}`), {
-      name: 'InvalidLevelError'
-    });
+    await this.#log(message, this.#NUMBER_LEVELS.fatal);
   }
 }
