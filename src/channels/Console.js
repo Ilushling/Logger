@@ -1,5 +1,5 @@
 /**
- * @typedef {import('../ILevel.js').StringLevel} StringLevel
+ * @typedef {import('../ILevel.js').LoggerStringLevel} LoggerStringLevel
  * @typedef {import('../ILogger.js').LoggerMetadata} LoggerMetadata
  */
 
@@ -9,7 +9,7 @@
  */
 export default class ConsoleLoggerChannel {
   /**
-   * @param {Uppercase<StringLevel>} level
+   * @param {Uppercase<LoggerStringLevel>} level
    * @param {any} message
    * @param {LoggerMetadata=} metadata
    */

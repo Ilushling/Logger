@@ -16,15 +16,16 @@ Logger
 #### Import types
 ```js
 /**
- * @typedef {import('mainlog').Channel} LoggerChannel
- * @typedef {import('mainlog').Channels} LoggerChannels
- * @typedef {import('mainlog').Level} LoggerLevel
+ * @typedef {import('mainlog').ILoggerChannel} ILoggerChannel
+ * @typedef {import('mainlog').LoggerChannels} LoggerChannels
+ * @typedef {import('mainlog').LoggerLevel} LoggerLevel
+ * @typedef {import('mainlog').LoggerStringLevel} LoggerStringLevel
  */
 ```
 
 #### Prepare channel
 ```js
-/** @type {LoggerChannel} */ 
+/** @type {ILoggerChannel} */ 
 const consoleChannel = {
   trace: message => console.log(message),
   debug: message => console.debug(message),
@@ -37,10 +38,6 @@ const consoleChannel = {
 
 #### Create logger
 ```js
-/** @type {LoggerLevel} */
-const level = 'trace';
-const levels = ['trace', 'debug', 'info', 'warn', 'error', 'fatal'];
-
 /** @type {LoggerChannels} */
 const channels = {
   console: container.get('consoleLoggerChannel'),
@@ -87,6 +84,11 @@ const domainLogger = loggerFactory.createDomain({
 
 #### Setup logger
 ```js
+/** @type {LoggerLevel} */
+const level = 'trace';
+/** @type {LoggerStringLevel} */
+const levels = ['trace', 'debug', 'info', 'warn', 'error', 'fatal'];
+
 logger.setup({
   configs: {
     level,

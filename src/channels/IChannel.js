@@ -1,7 +1,7 @@
 /**
- * @typedef {import('../ILevel.js').Level} Level
- * @typedef {import('../ILevel.js').StringLevel} StringLevel
- * @typedef {import('../ILevel.js').NumberLevel} NumberLevel
+ * @typedef {import('../ILevel.js').LoggerLevel} LoggerLevel
+ * @typedef {import('../ILevel.js').LoggerStringLevel} LoggerStringLevel
+ * @typedef {import('../ILevel.js').LoggerNumberLevel} LoggerNumberLevel
  */
 
 /**
@@ -9,7 +9,7 @@
  */
 
 /**
- * @typedef {Record<StringLevel, LoggerChannelLevelCallback>} ILoggerChannel
+ * @typedef {Record<LoggerStringLevel, LoggerChannelLevelCallback>} ILoggerChannel
  */
 
 /**
@@ -21,11 +21,11 @@
  * @typedef {Record<string, ILoggerChannel>} LoggerChannels
  * 
  * @typedef {object} LoggerChannelConfigs
- * @property {NumberLevel[]} levels
+ * @property {LoggerNumberLevel[]} levels
  * 
  * @typedef {object} LoggerChannelConfigsParams
- * @property {Level=} level
- * @property {StringLevel[]=} levels
+ * @property {LoggerLevel=} level
+ * @property {LoggerStringLevel[]=} levels
  * 
  * @typedef {Record<string, LoggerChannelConfigsParams>} LoggerChannelsConfigsParams
  */

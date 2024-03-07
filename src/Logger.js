@@ -1,7 +1,7 @@
 /**
- * @typedef {import('./ILevel.js').Level} Level
- * @typedef {import('./ILevel.js').StringLevel} StringLevel
- * @typedef {import('./ILevel.js').NumberLevel} NumberLevel
+ * @typedef {import('./ILevel.js').LoggerLevel} LoggerLevel
+ * @typedef {import('./ILevel.js').LoggerStringLevel} LoggerStringLevel
+ * @typedef {import('./ILevel.js').LoggerNumberLevel} LoggerNumberLevel
  */
 
 /**
@@ -30,7 +30,7 @@ export default class Logger {
   #channelsConfigs;
 
   // Constants
-  /** @type {Record<StringLevel, NumberLevel>} */
+  /** @type {Record<LoggerStringLevel, LoggerNumberLevel>} */
   #NUMBER_LEVELS = {
     trace: 1,
     debug: 2,
@@ -40,7 +40,7 @@ export default class Logger {
     fatal: 6
   };
 
-  /** @type {Record<NumberLevel, StringLevel>} */
+  /** @type {Record<LoggerNumberLevel, LoggerStringLevel>} */
   #STRING_LEVELS = {
     1: 'trace',
     2: 'debug',
@@ -50,7 +50,7 @@ export default class Logger {
     6: 'fatal'
   };
 
-  /** @type {Level[]} */
+  /** @type {LoggerLevel[]} */
   #LEVELS = [
     'all',
     'trace',
@@ -115,7 +115,7 @@ export default class Logger {
       return;
     }
 
-    /** @type {NumberLevel} */
+    /** @type {LoggerNumberLevel} */
     let i = numberLevel;
     let count = this.#MAX_NUMBER_LEVEL + 1;
     for (; i < count; i++) {
@@ -192,7 +192,7 @@ export default class Logger {
         return;
       }
 
-      /** @type {NumberLevel} */
+      /** @type {LoggerNumberLevel} */
       let i = numberLevel;
       let count = this.#MAX_NUMBER_LEVEL + 1;
       for (; i < count; i++) {
@@ -218,21 +218,21 @@ export default class Logger {
   }
 
   /**
-   * @param {StringLevel} level
+   * @param {LoggerStringLevel} level
    */
   #stringLevelToNumber(level) {
     return this.#NUMBER_LEVELS[level];
   }
 
   /**
-   * @param {NumberLevel} level
+   * @param {LoggerNumberLevel} level
    */
   #numberLevelToString(level) {
     return this.#STRING_LEVELS[level];
   }
 
   /**
-   * @param {Level} level
+   * @param {LoggerLevel} level
    */
   #levelToNumber(level) {
     const stringLevel = level === 'all' ? 'trace' : level;
@@ -245,7 +245,7 @@ export default class Logger {
   }
 
   /**
-   * @param {Level|NumberLevel} level
+   * @param {LoggerLevel|LoggerNumberLevel} level
    */
   #createInvalidLevelError(level) {
     const LEVELS = this.#LEVELS;
@@ -258,7 +258,7 @@ export default class Logger {
   }
 
   /**
-   * @param {NumberLevel} numberLevel
+   * @param {LoggerNumberLevel} numberLevel
    * @param {unknown} message
    * @param {LoggerMetadata=} metadata
    */

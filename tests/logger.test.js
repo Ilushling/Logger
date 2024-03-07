@@ -12,8 +12,8 @@ import LoggerFactory from '../src/LoggerFactory.js';
  * @typedef {import('../src/channels/IChannel.js').ILoggerChannel} ILoggerChannel
  * @typedef {import('../src/channels/IChannel.js').LoggerChannels} LoggerChannels
  * 
- * @typedef {import('../src/ILevel.js').Level} Level
- * @typedef {import('../src/ILevel.js').StringLevel} StringLevel
+ * @typedef {import('../src/ILevel.js').LoggerLevel} LoggerLevel
+ * @typedef {import('../src/ILevel.js').LoggerStringLevel} LoggerStringLevel
  */
 
 const loggerFactory = new LoggerFactory({
@@ -23,7 +23,7 @@ const loggerFactory = new LoggerFactory({
 
 /**
  * @param {LoggerChannels} channels
- * @param {Level} level
+ * @param {LoggerLevel} level
  */
 function createLogger(channels, level) {
   const logger = loggerFactory.create({
@@ -61,7 +61,7 @@ function createLogger(channels, level) {
 }
 
 /**
- * @param {Record<StringLevel, boolean>} levels
+ * @param {Record<LoggerStringLevel, boolean>} levels
  * @returns {LoggerChannels}
  */
 function createChannels(levels) {

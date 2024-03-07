@@ -18,9 +18,9 @@ export {
  */
 
 /**
- * @typedef {import('./src/ILevel.js').Level} Level
- * @typedef {import('./src/ILevel.js').StringLevel} StringLevel
- * @typedef {import('./src/ILevel.js').NumberLevel} NumberLevel
+ * @typedef {import('./src/ILevel.js').LoggerLevel} LoggerLevel
+ * @typedef {import('./src/ILevel.js').LoggerStringLevel} LoggerStringLevel
+ * @typedef {import('./src/ILevel.js').LoggerNumberLevel} LoggerNumberLevel
  */
 
 /**
