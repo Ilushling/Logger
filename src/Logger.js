@@ -1,21 +1,16 @@
 /**
- * @typedef {import('./ILogger.js').Channel} Channel
- * @typedef {import('./ILogger.js').Channels} Channels
- * 
- * @typedef {import('./ILogger.js').ChannelConfigsParams} ChannelConfigsParams
- * @typedef {import('./ILogger.js').ChannelsConfigsParams} ChannelsConfigsParams
+ * @typedef {import('./ILevel.js').Level} Level
+ * @typedef {import('./ILevel.js').StringLevel} StringLevel
+ * @typedef {import('./ILevel.js').NumberLevel} NumberLevel
  */
 
 /**
- * @typedef {import('./ILogger.js').Level} Level
- * @typedef {import('./ILogger.js').StringLevel} StringLevel
- * @typedef {import('./ILogger.js').NumberLevel} NumberLevel
- */
-
-/**
- * @typedef {import('./ILogger.js').LoggerConfigsParams} LoggerConfigsParams
  * @typedef {import('./ILogger.js').LoggerProperties} LoggerProperties
  * @typedef {import('./ILogger.js').LoggerParams} LoggerParams
+ */
+
+/**
+ * @typedef {import('./ILogger.js').LoggerMetadata} LoggerMetadata
  */
 
 /**
@@ -34,7 +29,7 @@ export default class Logger {
   /** @type {LoggerProperties['channelsConfigs']} */
   #channelsConfigs;
 
-  // Const
+  // Constants
   /** @type {Record<StringLevel, NumberLevel>} */
   #NUMBER_LEVELS = {
     trace: 1,
@@ -66,6 +61,9 @@ export default class Logger {
     'fatal',
     'off'
   ];
+
+  /** @type {number} */
+  #MAX_NUMBER_LEVEL = 6;
 
   /** @param {LoggerParams} params */
   constructor({
@@ -119,7 +117,8 @@ export default class Logger {
 
     /** @type {NumberLevel} */
     let i = numberLevel;
-    for (i = numberLevel; i < 7; i++) {
+    let count = this.#MAX_NUMBER_LEVEL + 1;
+    for (; i < count; i++) {
       currentLevels.push(i);
     }
   }
@@ -195,7 +194,8 @@ export default class Logger {
 
       /** @type {NumberLevel} */
       let i = numberLevel;
-      for (i = numberLevel; i < 7; i++) {
+      let count = this.#MAX_NUMBER_LEVEL + 1;
+      for (; i < count; i++) {
         currentChannelLevels.push(i);
       }
     } else if (channelLevels != null) {
@@ -258,10 +258,11 @@ export default class Logger {
   }
 
   /**
-   * @param {unknown} message
    * @param {NumberLevel} numberLevel
+   * @param {unknown} message
+   * @param {LoggerMetadata=} metadata
    */
-  async #log(message, numberLevel) {
+  async #log(numberLevel, message, metadata) {
     const currentLevels = this.#levels;
     if (!currentLevels.includes(numberLevel)) {
       return;
@@ -287,39 +288,39 @@ export default class Logger {
         continue;
       }
 
-      promises.push(channel[stringLevel](message));
+      promises.push(channel[stringLevel](message, metadata));
     }
 
     await Promise.allSettled(promises);
   }
 
   /** @type {ILogger['trace']} */
-  async trace(message) {
-    await this.#log(message, this.#NUMBER_LEVELS.trace);
+  async trace(message, metadata) {
+    await this.#log(this.#NUMBER_LEVELS.trace, message, metadata);
   }
 
   /** @type {ILogger['debug']} */
-  async debug(message) {
-    await this.#log(message, this.#NUMBER_LEVELS.debug);
+  async debug(message, metadata) {
+    await this.#log(this.#NUMBER_LEVELS.debug, message, metadata);
   }
 
   /** @type {ILogger['info']} */
-  async info(message) {
-    await this.#log(message, this.#NUMBER_LEVELS.info);
+  async info(message, metadata) {
+    await this.#log(this.#NUMBER_LEVELS.info, message, metadata);
   }
 
   /** @type {ILogger['warn']} */
-  async warn(message) {
-    await this.#log(message, this.#NUMBER_LEVELS.warn);
+  async warn(message, metadata) {
+    await this.#log(this.#NUMBER_LEVELS.warn, message, metadata);
   }
 
   /** @type {ILogger['error']} */
-  async error(message) {
-    await this.#log(message, this.#NUMBER_LEVELS.error);
+  async error(message, metadata) {
+    await this.#log(this.#NUMBER_LEVELS.error, message, metadata);
   }
 
   /** @type {ILogger['fatal']} */
-  async fatal(message) {
-    await this.#log(message, this.#NUMBER_LEVELS.fatal);
+  async fatal(message, metadata) {
+    await this.#log(this.#NUMBER_LEVELS.fatal, message, metadata);
   }
 }

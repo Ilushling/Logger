@@ -10,7 +10,8 @@ Logger
 ### Prepare
 1) [(Optional) Import types](#import-types);
 2) [Prepare channel](#prepare-channel);
-3) [Create logger](#create-logger).
+3) [Create logger](#create-logger);
+4) [Setup logger](#create-logger).
 
 #### Import types
 ```js
@@ -50,6 +51,42 @@ const logger = new Logger({
   channels
 });
 
+const domainLogger = new DomainLogger({
+  logger,
+  metadata: {
+    organization: 'Organization',
+    context: 'Context',
+    app: 'App',
+    sourceClass: 'Class'
+  }
+});
+```
+
+or
+
+```js
+const loggerFactory = new LoggerFactory({
+  Logger,
+  DomainLogger
+});
+
+const logger = loggerFactory.create({
+  channels
+});
+
+const domainLogger = loggerFactory.createDomain({
+  logger,
+  metadata: {
+    organization: 'Organization',
+    context: 'Context',
+    app: 'App',
+    sourceClass: 'Class'
+  }
+});
+```
+
+#### Setup logger
+```js
 logger.setup({
   configs: {
     level,
@@ -63,8 +100,11 @@ logger.setup({
     }
   }
 });
+```
 
-// or
+or
+
+```js
 logger.setLevels(levels);
 logger.setChannelsConfigs({
   channel: {
@@ -74,8 +114,11 @@ logger.setChannelsConfigs({
     levels
   }
 });
+```
 
-// or
+or
+
+```js
 logger.setLevel(level);
 logger.setChannelConfigs('console', {
   level
@@ -96,4 +139,17 @@ logger.info('Info message');
 logger.warn('Warn message');
 logger.error('Error message');
 logger.fatal('Fatal message');
+```
+
+or
+
+```js
+const correlationId = 'requestId';
+
+domainLogger.trace('Trace message', { correlationId });
+domainLogger.debug('Debug message', { correlationId });
+domainLogger.info('Info message', { correlationId });
+domainLogger.warn('Warn message', { correlationId });
+domainLogger.error('Error message', { correlationId });
+domainLogger.fatal('Fatal message', { correlationId });
 ```

@@ -2,19 +2,31 @@ import assert from 'node:assert';
 import { describe, it } from 'node:test';
 
 import Logger from '../src/Logger.js';
+import DomainLogger from '../src/DomainLogger.js';
+
+import LoggerFactory from '../src/LoggerFactory.js';
+
+// import ConsoleLoggerChannel from '../src/channels/Console.js';
 
 /**
- * @typedef {import('../src/ILogger.js').Channel} Channel
- * @typedef {import('../src/ILogger.js').Channels} Channels
- * @typedef {import('../src/ILogger.js').Level} Level
+ * @typedef {import('../src/channels/IChannel.js').ILoggerChannel} ILoggerChannel
+ * @typedef {import('../src/channels/IChannel.js').LoggerChannels} LoggerChannels
+ * 
+ * @typedef {import('../src/ILevel.js').Level} Level
+ * @typedef {import('../src/ILevel.js').StringLevel} StringLevel
  */
 
+const loggerFactory = new LoggerFactory({
+  Logger,
+  DomainLogger
+});
+
 /**
- * @param {Channels} channels
+ * @param {LoggerChannels} channels
  * @param {Level} level
  */
 function createLogger(channels, level) {
-  const logger = new Logger({
+  const logger = loggerFactory.create({
     channels
   });
 
@@ -22,6 +34,9 @@ function createLogger(channels, level) {
     configs: {
       level,
       channels: {
+        console: {
+          level
+        },
         test: {
           level
         }
@@ -29,22 +44,28 @@ function createLogger(channels, level) {
     }
   });
 
-  return logger;
+  const domainLogger = loggerFactory.createDomain({
+    logger,
+    metadata: {
+      organization: 'components',
+      context: 'logger',
+      app: 'test',
+      sourceClass: 'test'
+    }
+  });
+
+  return {
+    logger,
+    domainLogger
+  };
 }
 
 /**
- * @param {{
- *  trace: boolean,
- *  debug: boolean,
- *  info: boolean,
- *  warn: boolean,
- *  error: boolean,
- *  fatal: boolean
- * }} levels
- * @returns {Channels}
+ * @param {Record<StringLevel, boolean>} levels
+ * @returns {LoggerChannels}
  */
 function createChannels(levels) {
-  /** @type {Channel} */
+  /** @type {ILoggerChannel} */
   const testChannel = {
     trace: message => levels.trace = true,
     debug: message => levels.debug = true,
@@ -55,10 +76,12 @@ function createChannels(levels) {
   };
 
   return {
+    // console: new ConsoleLoggerChannel(),
     test: testChannel
   };
 }
 
+const correlationId = 'testId';
 describe('Logger', () => {
   describe('Levels', () => {
     it('all', async () => {
@@ -73,14 +96,14 @@ describe('Logger', () => {
       };
 
       const channels = createChannels(levels);
-      const logger = createLogger(channels, level);
+      const { domainLogger: logger } = createLogger(channels, level);
 
-      await logger.trace('trace');
-      await logger.debug('debug');
-      await logger.info('info');
-      await logger.warn('warn');
-      await logger.error('error');
-      await logger.fatal('fatal');
+      await logger.trace('trace', { correlationId });
+      await logger.debug('debug', { correlationId });
+      await logger.info('info', { correlationId });
+      await logger.warn('warn', { correlationId });
+      await logger.error('error', { correlationId });
+      await logger.fatal('fatal', { correlationId });
 
       assert.deepStrictEqual(levels, {
         trace: true,
@@ -105,14 +128,14 @@ describe('Logger', () => {
 
       const channels = createChannels(levels);
 
-      const logger = createLogger(channels, level);
+      const { domainLogger: logger } = createLogger(channels, level);
 
-      await logger.trace('trace');
-      await logger.debug('debug');
-      await logger.info('info');
-      await logger.warn('warn');
-      await logger.error('error');
-      await logger.fatal('fatal');
+      await logger.trace('trace', { correlationId });
+      await logger.debug('debug', { correlationId });
+      await logger.info('info', { correlationId });
+      await logger.warn('warn', { correlationId });
+      await logger.error('error', { correlationId });
+      await logger.fatal('fatal', { correlationId });
 
       assert.deepStrictEqual(levels, {
         trace: true,
@@ -137,14 +160,14 @@ describe('Logger', () => {
 
       const channels = createChannels(levels);
 
-      const logger = createLogger(channels, level);
+      const { domainLogger: logger } = createLogger(channels, level);
 
-      await logger.trace('trace');
-      await logger.debug('debug');
-      await logger.info('info');
-      await logger.warn('warn');
-      await logger.error('error');
-      await logger.fatal('fatal');
+      await logger.trace('trace', { correlationId });
+      await logger.debug('debug', { correlationId });
+      await logger.info('info', { correlationId });
+      await logger.warn('warn', { correlationId });
+      await logger.error('error', { correlationId });
+      await logger.fatal('fatal', { correlationId });
 
       assert.deepStrictEqual(levels, {
         trace: false,
@@ -169,14 +192,14 @@ describe('Logger', () => {
 
       const channels = createChannels(levels);
 
-      const logger = createLogger(channels, level);
+      const { domainLogger: logger } = createLogger(channels, level);
 
-      await logger.trace('trace');
-      await logger.debug('debug');
-      await logger.info('info');
-      await logger.warn('warn');
-      await logger.error('error');
-      await logger.fatal('fatal');
+      await logger.trace('trace', { correlationId });
+      await logger.debug('debug', { correlationId });
+      await logger.info('info', { correlationId });
+      await logger.warn('warn', { correlationId });
+      await logger.error('error', { correlationId });
+      await logger.fatal('fatal', { correlationId });
 
       assert.deepStrictEqual(levels, {
         trace: false,
@@ -201,14 +224,14 @@ describe('Logger', () => {
 
       const channels = createChannels(levels);
 
-      const logger = createLogger(channels, level);
+      const { domainLogger: logger } = createLogger(channels, level);
 
-      await logger.trace('trace');
-      await logger.debug('debug');
-      await logger.info('info');
-      await logger.warn('warn');
-      await logger.error('error');
-      await logger.fatal('fatal');
+      await logger.trace('trace', { correlationId });
+      await logger.debug('debug', { correlationId });
+      await logger.info('info', { correlationId });
+      await logger.warn('warn', { correlationId });
+      await logger.error('error', { correlationId });
+      await logger.fatal('fatal', { correlationId });
 
       assert.deepStrictEqual(levels, {
         trace: false,
@@ -233,14 +256,14 @@ describe('Logger', () => {
 
       const channels = createChannels(levels);
 
-      const logger = createLogger(channels, level);
+      const { domainLogger: logger } = createLogger(channels, level);
 
-      await logger.trace('trace');
-      await logger.debug('debug');
-      await logger.info('info');
-      await logger.warn('warn');
-      await logger.error('error');
-      await logger.fatal('fatal');
+      await logger.trace('trace', { correlationId });
+      await logger.debug('debug', { correlationId });
+      await logger.info('info', { correlationId });
+      await logger.warn('warn', { correlationId });
+      await logger.error('error', { correlationId });
+      await logger.fatal('fatal', { correlationId });
 
       assert.deepStrictEqual(levels, {
         trace: false,
@@ -265,14 +288,14 @@ describe('Logger', () => {
 
       const channels = createChannels(levels);
 
-      const logger = createLogger(channels, level);
+      const { domainLogger: logger } = createLogger(channels, level);
 
-      await logger.trace('trace');
-      await logger.debug('debug');
-      await logger.info('info');
-      await logger.warn('warn');
-      await logger.error('error');
-      await logger.fatal('fatal');
+      await logger.trace('trace', { correlationId });
+      await logger.debug('debug', { correlationId });
+      await logger.info('info', { correlationId });
+      await logger.warn('warn', { correlationId });
+      await logger.error('error', { correlationId });
+      await logger.fatal('fatal', { correlationId });
 
       assert.deepStrictEqual(levels, {
         trace: false,
@@ -298,7 +321,7 @@ describe('Logger', () => {
           fatal: false
         };
 
-        /** @type {Channel} */
+        /** @type {ILoggerChannel} */
         const testChannel = {
           trace: message => levels.trace = true,
           debug: message => levels.debug = true,
@@ -308,12 +331,12 @@ describe('Logger', () => {
           fatal: message => levels.fatal = true
         };
 
-        /** @type {Channels} */
+        /** @type {LoggerChannels} */
         const channels = {
           test: testChannel
         };
 
-        const logger = createLogger(channels, level);
+        const { logger, domainLogger } = createLogger(channels, level);
 
         const newLevel = 'info';
         logger.setLevel(newLevel);
@@ -321,12 +344,12 @@ describe('Logger', () => {
           level: newLevel
         });
 
-        await logger.trace('trace');
-        await logger.debug('debug');
-        await logger.info('info');
-        await logger.warn('warn');
-        await logger.error('error');
-        await logger.fatal('fatal');
+        await domainLogger.trace('trace', { correlationId });
+        await domainLogger.debug('debug', { correlationId });
+        await domainLogger.info('info', { correlationId });
+        await domainLogger.warn('warn', { correlationId });
+        await domainLogger.error('error', { correlationId });
+        await domainLogger.fatal('fatal', { correlationId });
 
         assert.deepStrictEqual(levels, {
           trace: false,
