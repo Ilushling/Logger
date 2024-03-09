@@ -3,17 +3,26 @@ import Logger from './src/Logger.js';
 
 import LoggerFactory from './src/LoggerFactory.js';
 
+import ConsoleLoggerChannel from './src/channels/Console.js';
+
 export {
   Logger,
   DomainLogger,
 
-  LoggerFactory
+  LoggerFactory,
+
+  ConsoleLoggerChannel
 };
 
 /**
  * @typedef {import('./src/ILogger.js').ILogger} ILogger
- * @typedef {import('./src/IDomainLogger.js').IDomainLogger} IDomainLogger
+ * @typedef {import('./src/ILogger.js').LoggerConfigParams} LoggerConfigParams
  * 
+ * @typedef {import('./src/IDomainLogger.js').IDomainLogger} IDomainLogger
+ * @typedef {import('./src/IDomainLogger.js').DomainLoggerConfigParams} DomainLoggerConfigParams
+ */
+
+/**
  * @typedef {import('./src/ILoggerFactory.js').ILoggerFactory} ILoggerFactory
  */
 
@@ -29,8 +38,8 @@ export {
  * 
  * @typedef {import('./src/channels/IChannel.js').LoggerChannelConfigs} LoggerChannelConfigs
  * 
- * @typedef {import('./src/channels/IChannel.js').LoggerChannelConfigsParams} LoggerChannelConfigsParams
- * @typedef {import('./src/channels/IChannel.js').LoggerChannelsConfigsParams} LoggerChannelsConfigsParams
+ * @typedef {import('./src/channels/IChannel.js').LoggerChannelConfigParams} LoggerChannelConfigParams
+ * @typedef {import('./src/channels/IChannel.js').LoggerChannelsConfigParams} LoggerChannelsConfigParams
  */
 
 /**

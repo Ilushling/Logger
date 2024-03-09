@@ -9,18 +9,18 @@
  * 
  * @typedef {import('./channels/IChannel.js').LoggerChannelConfigs} LoggerChannelConfigs
  * 
- * @typedef {import('./channels/IChannel.js').LoggerChannelConfigsParams} LoggerChannelConfigsParams
- * @typedef {import('./channels/IChannel.js').LoggerChannelsConfigsParams} LoggerChannelsConfigsParams
+ * @typedef {import('./channels/IChannel.js').LoggerChannelConfigParams} LoggerChannelConfigParams
+ * @typedef {import('./channels/IChannel.js').LoggerChannelsConfigParams} LoggerChannelsConfigParams
  */
 
 /**
  * @typedef {object} LoggerDependencies
  * @property {LoggerChannels} channels
  * 
- * @typedef {object} LoggerConfigsParams
+ * @typedef {object} LoggerConfigParams
  * @property {LoggerLevel=} level
  * @property {LoggerStringLevel[]=} levels
- * @property {LoggerChannelsConfigsParams=} channels
+ * @property {LoggerChannelsConfigParams=} channels
  * 
  * @typedef {object} LoggerConfigs
  * @property {LoggerNumberLevel[]} levels
@@ -33,13 +33,13 @@
 
 /**
  * @typedef {object} ILogger
- * @property {(params: { configs: LoggerConfigsParams }) => void} setup
- * @property {() => LoggerNumberLevel[]} getLevels
+ * @property {(params: { configs: LoggerConfigParams }) => void} setup
+ * @property {() => LoggerStringLevel[]} getLevels
  * @property {(level: LoggerLevel) => void} setLevel
  * @property {(levels: LoggerStringLevel[]) => void} setLevels
  * @property {(channels: LoggerChannels) => void} setChannels
- * @property {(channelName: string, channelConfigs: LoggerChannelConfigsParams) => void} setChannelConfigs
- * @property {(channelsConfigs: LoggerChannelsConfigsParams) => void} setChannelsConfigs
+ * @property {(channelName: string, channelConfigs: LoggerChannelConfigParams) => void} setChannelConfigs
+ * @property {(channelsConfigs: LoggerChannelsConfigParams) => void} setChannelsConfigs
  * 
  * @property {LoggerLevelCallback} trace
  * @property {LoggerLevelCallback} debug

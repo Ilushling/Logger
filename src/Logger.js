@@ -94,8 +94,9 @@ export default class Logger {
     }
   }
 
+  /** @type {ILogger['getLevels']} */
   getLevels() {
-    return this.#levels;
+    return this.#levels.map(level => this.#numberLevelToString(level));
   }
 
   /** @type {ILogger['setLevel']} */

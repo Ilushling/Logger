@@ -22,13 +22,14 @@ export default class DomainLogger {
 
   /** @param {DomainLoggerParams} params */
   constructor({
-    logger,
-
-    metadata
+    logger
   }) {
     this.#logger = logger;
+  }
 
-    this.#metadata = metadata;
+  /** @type {IDomainLogger['setup']} */
+  setup({ configs }) {
+    this.#metadata = configs.metadata;
   }
 
   /**

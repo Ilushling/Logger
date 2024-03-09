@@ -1,19 +1,20 @@
 # Logger
-Logger
+Logger with channels & domain metadata decorator
 
-- [Usage](#usage).
+1) [Usage](#usage):
+  1) [Prepare](#prepare):
+      1) [Import types](#import-types);
+      2) [Prepare channel](#prepare-channel);
+      3) [Create logger](#create-logger);
+      4) [Setup logger](#setup-logger).
+  2) [Commands](#commands):
+      1) [Call logger](#call-logger).
 
 ## Usage
-1) [Prepare](#prepare);
-2) [Commands](#commands).
-
 ### Prepare
-1) [(Optional) Import types](#import-types);
-2) [Prepare channel](#prepare-channel);
-3) [Create logger](#create-logger);
-4) [Setup logger](#create-logger).
-
 #### Import types
+Optional
+
 ```js
 /**
  * @typedef {import('mainlog').ILoggerChannel} ILoggerChannel
@@ -25,6 +26,8 @@ Logger
 
 #### Prepare channel
 ```js
+import { Logger, DomainLogger, ConsoleLoggerChannel } from 'mainlog';
+
 /** @type {ILoggerChannel} */ 
 const consoleChannel = {
   trace: message => console.log(message),
@@ -40,8 +43,8 @@ const consoleChannel = {
 ```js
 /** @type {LoggerChannels} */
 const channels = {
-  console: container.get('consoleLoggerChannel'),
-  console2: container.get('console2LoggerChannel')
+  console: consoleChannel,
+  console2: new ConsoleLoggerChannel()
 };
 
 const logger = new Logger({
@@ -49,19 +52,15 @@ const logger = new Logger({
 });
 
 const domainLogger = new DomainLogger({
-  logger,
-  metadata: {
-    organization: 'Organization',
-    context: 'Context',
-    app: 'App',
-    sourceClass: 'Class'
-  }
+  logger
 });
 ```
 
 or
 
 ```js
+import { Logger, DomainLogger, LoggerFactory } from 'mainlog';
+
 const loggerFactory = new LoggerFactory({
   Logger,
   DomainLogger
@@ -72,13 +71,7 @@ const logger = loggerFactory.create({
 });
 
 const domainLogger = loggerFactory.createDomain({
-  logger,
-  metadata: {
-    organization: 'Organization',
-    context: 'Context',
-    app: 'App',
-    sourceClass: 'Class'
-  }
+  logger
 });
 ```
 
@@ -99,6 +92,17 @@ logger.setup({
       console2: {
         levels
       }
+    }
+  }
+});
+
+domainLogger.setup({
+  configs: {
+    metadata: {
+      organization: 'Organization',
+      context: 'Context',
+      app: 'App',
+      sourceClass: 'Class'
     }
   }
 });
@@ -131,8 +135,6 @@ logger.setChannelConfigs('console2', {
 ```
 
 ### Commands
-1) [Call logger](#call-logger).
-
 #### Call logger
 ```js
 logger.trace('Trace message');

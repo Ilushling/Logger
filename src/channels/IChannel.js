@@ -23,9 +23,9 @@
  * @typedef {object} LoggerChannelConfigs
  * @property {LoggerNumberLevel[]} levels
  * 
- * @typedef {object} LoggerChannelConfigsParams
+ * @typedef {object} LoggerChannelConfigParams
  * @property {LoggerLevel=} level
  * @property {LoggerStringLevel[]=} levels
  * 
- * @typedef {Record<string, LoggerChannelConfigsParams>} LoggerChannelsConfigsParams
+ * @typedef {Record<string, LoggerChannelConfigParams>} LoggerChannelsConfigParams
  */

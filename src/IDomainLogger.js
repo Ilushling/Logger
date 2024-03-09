@@ -11,16 +11,21 @@
  */
 
 /**
+ * @typedef {object} DomainLoggerConfigParams
+ * @property {LoggerMetadata} metadata
+ * 
  * @typedef {object} DomainLoggerProperties
  * @property {ILogger} logger
  * 
- * @property {LoggerMetadata} metadata
+ * @property {LoggerMetadata=} metadata
  * 
- * @typedef {DomainLoggerProperties} DomainLoggerParams
+ * @typedef {object} DomainLoggerParams
+ * @property {ILogger} logger
  */
 
 /**
  * @typedef {object} IDomainLogger
+ * @property {(params: { configs: DomainLoggerConfigParams }) => void} setup
  * @property {LoggerLevelCallback} trace
  * @property {LoggerLevelCallback} debug
  * @property {LoggerLevelCallback} info
