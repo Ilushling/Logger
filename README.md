@@ -101,8 +101,7 @@ domainLogger.setup({
     metadata: {
       organization: 'Organization',
       context: 'Context',
-      app: 'App',
-      sourceClass: 'Class'
+      app: 'App'
     }
   }
 });

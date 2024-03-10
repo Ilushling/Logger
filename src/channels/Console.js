@@ -95,13 +95,15 @@ export default class ConsoleLoggerChannel {
       if (stack != null) {
         resultMessage += delimiter + stack;
       }
-  
-      const cause = currentError.cause;
-      if (cause instanceof Error) {
-        resultMessage += delimiter + 'Caused by: ';
 
-        currentError = cause;
+      const cause = currentError.cause;
+      if (!(cause instanceof Error)) {
+        break;
       }
+
+      resultMessage += delimiter + 'Caused by: ';
+
+      currentError = cause;
     }
 
     return resultMessage;
