@@ -98,10 +98,14 @@ logger.setup({
 
 domainLogger.setup({
   configs: {
-    metadata: {
-      organization: 'Organization',
-      context: 'Context',
-      app: 'App'
+    options: {
+      prefix: 'prefix',
+      postfix: 'postfix',
+      metadata: {
+        organization: 'Organization',
+        context: 'Context',
+        app: 'App'
+      }
     }
   }
 });
@@ -149,10 +153,10 @@ or
 ```js
 const correlationId = 'requestId';
 
-domainLogger.trace('Trace message', { correlationId });
-domainLogger.debug('Debug message', { correlationId });
-domainLogger.info('Info message', { correlationId });
-domainLogger.warn('Warn message', { correlationId });
-domainLogger.error('Error message', { correlationId });
-domainLogger.fatal('Fatal message', { correlationId });
+domainLogger.trace('Trace message', { metadata: { sourceClass: 'ClassName', correlationId } });
+domainLogger.debug('Debug message', { metadata: { sourceClass: 'ClassName', correlationId } });
+domainLogger.info('Info message', { metadata: { sourceClass: 'ClassName', correlationId } });
+domainLogger.warn('Warn message', { metadata: { sourceClass: 'ClassName', correlationId } });
+domainLogger.error('Error message', { metadata: { sourceClass: 'ClassName', correlationId } });
+domainLogger.fatal('Fatal message', { metadata: { sourceClass: 'ClassName', correlationId } });
 ```

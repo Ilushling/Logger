@@ -43,5 +43,6 @@ export {
  */
 
 /**
+ * @typedef {import('./src/ILogger.js').LoggerOptions} LoggerOptions
  * @typedef {import('./src/ILogger.js').LoggerMetadata} LoggerMetadata
  */

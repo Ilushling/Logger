@@ -5,7 +5,7 @@
  */
 
 /**
- * @typedef {import('../ILogger.js').LoggerMetadata} LoggerMetadata
+ * @typedef {import('../ILogger.js').LoggerOptions} LoggerOptions
  */
 
 /**
@@ -15,7 +15,7 @@
 /**
  * @callback LoggerChannelLevelCallback
  * @param {any} message
- * @param {LoggerMetadata=} metadata
+ * @param {LoggerOptions=} options
  * @returns {any}
  * 
  * @typedef {Record<string, ILoggerChannel>} LoggerChannels

@@ -17,11 +17,6 @@
  * @typedef {object} LoggerDependencies
  * @property {LoggerChannels} channels
  * 
- * @typedef {object} LoggerConfigParams
- * @property {LoggerLevel=} level
- * @property {LoggerStringLevel[]=} levels
- * @property {LoggerChannelsConfigParams=} channels
- * 
  * @typedef {object} LoggerConfigs
  * @property {LoggerNumberLevel[]} levels
  * @property {Record<string, LoggerChannelConfigs>} channelsConfigs
@@ -29,11 +24,19 @@
  * @typedef {LoggerDependencies & LoggerConfigs} LoggerProperties
  * 
  * @typedef {LoggerDependencies} LoggerParams
+ * 
+ * @typedef {object} LoggerConfigParams
+ * @property {LoggerLevel=} level
+ * @property {LoggerStringLevel[]=} levels
+ * @property {LoggerChannelsConfigParams=} channels
+ * 
+ * @typedef LoggerSetupParams
+ * @property {LoggerConfigParams} configs
  */
 
 /**
  * @typedef {object} ILogger
- * @property {(params: { configs: LoggerConfigParams }) => void} setup
+ * @property {(params: LoggerSetupParams) => void} setup
  * @property {() => LoggerStringLevel[]} getLevels
  * @property {(level: LoggerLevel) => void} setLevel
  * @property {(levels: LoggerStringLevel[]) => void} setLevels
@@ -56,11 +59,16 @@
 /**
  * @callback LoggerLevelCallback
  * @param {any} message
- * @param {LoggerMetadata=} metadata
+ * @param {LoggerOptions=} options
  * @returns {Promise<void>}
  */
 
 /**
+ * @typedef {object} LoggerOptions
+ * @property {any=} prefix
+ * @property {any=} postfix
+ * @property {LoggerMetadata=} metadata
+ * 
  * @typedef {object} LoggerMetadata
  * @property {string=} organization - Organization or project name
  * @property {string=} context - Bounded Context name

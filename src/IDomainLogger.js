@@ -3,7 +3,7 @@
  */
 
 /**
- * @typedef {import('./ILogger.js').LoggerMetadata} LoggerMetadata
+ * @typedef {import('./ILogger.js').LoggerOptions} LoggerOptions
  */
 
 /**
@@ -11,21 +11,27 @@
  */
 
 /**
+ * @typedef {object} DomainLoggerDependencies
+ * @property {ILogger | IDomainLogger} logger
+ * 
+ * @typedef {DomainLoggerDependencies & {
+ *  configs?: DomainLoggerConfigs
+ * }} DomainLoggerProperties
+ * 
+ * @typedef {DomainLoggerDependencies} DomainLoggerParams
+ * 
+ * @typedef {object} DomainLoggerSetupParams
+ * @property {DomainLoggerConfigParams} configs
+ * 
  * @typedef {object} DomainLoggerConfigParams
- * @property {LoggerMetadata} metadata
+ * @property {LoggerOptions} options
  * 
- * @typedef {object} DomainLoggerProperties
- * @property {ILogger} logger
- * 
- * @property {LoggerMetadata=} metadata
- * 
- * @typedef {object} DomainLoggerParams
- * @property {ILogger} logger
+ * @typedef {DomainLoggerConfigParams} DomainLoggerConfigs
  */
 
 /**
  * @typedef {object} IDomainLogger
- * @property {(params: { configs: DomainLoggerConfigParams }) => void} setup
+ * @property {(params: DomainLoggerSetupParams) => void} setup
  * @property {LoggerLevelCallback} trace
  * @property {LoggerLevelCallback} debug
  * @property {LoggerLevelCallback} info

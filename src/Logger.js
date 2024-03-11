@@ -10,7 +10,7 @@
  */
 
 /**
- * @typedef {import('./ILogger.js').LoggerMetadata} LoggerMetadata
+ * @typedef {import('./ILogger.js').LoggerOptions} LoggerOptions
  */
 
 /**
@@ -261,9 +261,9 @@ export default class Logger {
   /**
    * @param {LoggerNumberLevel} numberLevel
    * @param {unknown} message
-   * @param {LoggerMetadata=} metadata
+   * @param {LoggerOptions=} options
    */
-  async #log(numberLevel, message, metadata) {
+  async #log(numberLevel, message, options) {
     const currentLevels = this.#levels;
     if (!currentLevels.includes(numberLevel)) {
       return;
@@ -289,39 +289,39 @@ export default class Logger {
         continue;
       }
 
-      promises.push(channel[stringLevel](message, metadata));
+      promises.push(channel[stringLevel](message, options));
     }
 
     await Promise.allSettled(promises);
   }
 
   /** @type {ILogger['trace']} */
-  async trace(message, metadata) {
-    await this.#log(this.#NUMBER_LEVELS.trace, message, metadata);
+  async trace(message, options) {
+    await this.#log(this.#NUMBER_LEVELS.trace, message, options);
   }
 
   /** @type {ILogger['debug']} */
-  async debug(message, metadata) {
-    await this.#log(this.#NUMBER_LEVELS.debug, message, metadata);
+  async debug(message, options) {
+    await this.#log(this.#NUMBER_LEVELS.debug, message, options);
   }
 
   /** @type {ILogger['info']} */
-  async info(message, metadata) {
-    await this.#log(this.#NUMBER_LEVELS.info, message, metadata);
+  async info(message, options) {
+    await this.#log(this.#NUMBER_LEVELS.info, message, options);
   }
 
   /** @type {ILogger['warn']} */
-  async warn(message, metadata) {
-    await this.#log(this.#NUMBER_LEVELS.warn, message, metadata);
+  async warn(message, options) {
+    await this.#log(this.#NUMBER_LEVELS.warn, message, options);
   }
 
   /** @type {ILogger['error']} */
-  async error(message, metadata) {
-    await this.#log(this.#NUMBER_LEVELS.error, message, metadata);
+  async error(message, options) {
+    await this.#log(this.#NUMBER_LEVELS.error, message, options);
   }
 
   /** @type {ILogger['fatal']} */
-  async fatal(message, metadata) {
-    await this.#log(this.#NUMBER_LEVELS.fatal, message, metadata);
+  async fatal(message, options) {
+    await this.#log(this.#NUMBER_LEVELS.fatal, message, options);
   }
 }

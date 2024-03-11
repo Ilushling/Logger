@@ -4,7 +4,7 @@
  */
 
 /**
- * @typedef {import('./IDomainLogger.js').LoggerMetadata} LoggerMetadata
+ * @typedef {import('./IDomainLogger.js').LoggerOptions} LoggerOptions
  */
 
 /**
@@ -17,8 +17,8 @@ export default class DomainLogger {
   #logger;
 
   // Configs
-  /** @type {DomainLoggerProperties['metadata']} */
-  #metadata;
+  /** @type {DomainLoggerProperties['configs']} */
+  #configs;
 
   /** @param {DomainLoggerParams} params */
   constructor({
@@ -29,43 +29,55 @@ export default class DomainLogger {
 
   /** @type {IDomainLogger['setup']} */
   setup({ configs }) {
-    this.#metadata = configs.metadata;
+    this.#configs = configs;
   }
 
   /**
-   * @param {LoggerMetadata=} metadata
+   * @param {LoggerOptions=} options
    */
-  #handleMetadata(metadata) {
-    return Object.assign({}, this.#metadata, metadata);
+  #handleOptions(options) {
+    const currentOptions = this.#configs?.options;
+
+    if (options == null) {
+      return currentOptions;
+    }
+
+    const newOptions = Object.assign({}, currentOptions, options);
+
+    if (newOptions.metadata != null) {
+      newOptions.metadata = Object.assign({}, currentOptions?.metadata, options.metadata);
+    }
+
+    return newOptions;
   }
 
   /** @type {IDomainLogger['trace']} */
-  async trace(message, metadata) {
-    await this.#logger.trace(message, this.#handleMetadata(metadata));
+  async trace(message, options) {
+    await this.#logger.trace(message, this.#handleOptions(options));
   }
 
   /** @type {IDomainLogger['debug']} */
-  async debug(message, metadata) {
-    await this.#logger.debug(message, this.#handleMetadata(metadata));
+  async debug(message, options) {
+    await this.#logger.debug(message, this.#handleOptions(options));
   }
 
   /** @type {IDomainLogger['info']} */
-  async info(message, metadata) {
-    await this.#logger.info(message, this.#handleMetadata(metadata));
+  async info(message, options) {
+    await this.#logger.info(message, this.#handleOptions(options));
   }
 
   /** @type {IDomainLogger['warn']} */
-  async warn(message, metadata) {
-    await this.#logger.warn(message, this.#handleMetadata(metadata));
+  async warn(message, options) {
+    await this.#logger.warn(message, this.#handleOptions(options));
   }
 
   /** @type {IDomainLogger['error']} */
-  async error(message, metadata) {
-    await this.#logger.error(message, this.#handleMetadata(metadata));
+  async error(message, options) {
+    await this.#logger.error(message, this.#handleOptions(options));
   }
 
   /** @type {IDomainLogger['fatal']} */
-  async fatal(message, metadata) {
-    await this.#logger.fatal(message, this.#handleMetadata(metadata));
+  async fatal(message, options) {
+    await this.#logger.fatal(message, this.#handleOptions(options));
   }
 }
