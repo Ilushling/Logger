@@ -177,7 +177,7 @@ export default class ConsoleLoggerChannel {
    * @param {any} message
    */
   #serizalize(message) {
-    return JSON.stringify(message, null, 2);
+    return JSON.stringify(message);
   }
 
   /** @type {ILoggerChannel['trace']} */
