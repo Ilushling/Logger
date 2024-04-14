@@ -51,10 +51,12 @@ function createLogger(channels, level) {
   domainLogger.setup({
     configs: {
       options: {
-    metadata: {
-      organization: 'components',
-      context: 'logger',
-          app: 'test'
+        metadata: {
+          organization: 'components',
+          context: 'logger',
+          app: 'test',
+
+          sourceClass: 'test'
         }
       }
     }
@@ -87,6 +89,21 @@ function createChannels(levels) {
   };
 }
 
+// const { logger, domainLogger } = createLogger({
+//   console: new ConsoleLoggerChannel()
+// }, 'trace');
+
+// logger.setChannelConfigs('console', {
+//   level: 'trace'
+// });
+
+// const c3 = new Error('c3', { cause: { test: 3 } });
+// const c2 = new Error('c2', { cause: { c3, test: 2 } });
+// const c1 = new Error('c1', { cause: { c2, test: 1, a: { b: 1, c: 2 } } });
+// const e = new Error('main', { cause: c1 });
+
+// domainLogger.trace(e);
+
 const correlationId = 'testId';
 describe('Logger', () => {
   describe('Levels', () => {
@@ -104,12 +121,12 @@ describe('Logger', () => {
       const channels = createChannels(levels);
       const { domainLogger: logger } = createLogger(channels, level);
 
-      await logger.trace('trace', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.debug('debug', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.info('info', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.warn('warn', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.error('error', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.fatal('fatal', { metadata: { sourceClass: 'test', correlationId } });
+      await logger.trace('trace', { metadata: { correlationId } });
+      await logger.debug('debug', { metadata: { correlationId } });
+      await logger.info('info', { metadata: { correlationId } });
+      await logger.warn('warn', { metadata: { correlationId } });
+      await logger.error('error', { metadata: { correlationId } });
+      await logger.fatal('fatal', { metadata: { correlationId } });
 
       assert.deepStrictEqual(levels, {
         trace: true,
@@ -136,12 +153,12 @@ describe('Logger', () => {
 
       const { domainLogger: logger } = createLogger(channels, level);
 
-      await logger.trace('trace', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.debug('debug', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.info('info', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.warn('warn', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.error('error', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.fatal('fatal', { metadata: { sourceClass: 'test', correlationId } });
+      await logger.trace('trace', { metadata: { correlationId } });
+      await logger.debug('debug', { metadata: { correlationId } });
+      await logger.info('info', { metadata: { correlationId } });
+      await logger.warn('warn', { metadata: { correlationId } });
+      await logger.error('error', { metadata: { correlationId } });
+      await logger.fatal('fatal', { metadata: { correlationId } });
 
       assert.deepStrictEqual(levels, {
         trace: true,
@@ -168,12 +185,12 @@ describe('Logger', () => {
 
       const { domainLogger: logger } = createLogger(channels, level);
 
-      await logger.trace('trace', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.debug('debug', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.info('info', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.warn('warn', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.error('error', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.fatal('fatal', { metadata: { sourceClass: 'test', correlationId } });
+      await logger.trace('trace', { metadata: { correlationId } });
+      await logger.debug('debug', { metadata: { correlationId } });
+      await logger.info('info', { metadata: { correlationId } });
+      await logger.warn('warn', { metadata: { correlationId } });
+      await logger.error('error', { metadata: { correlationId } });
+      await logger.fatal('fatal', { metadata: { correlationId } });
 
       assert.deepStrictEqual(levels, {
         trace: false,
@@ -200,12 +217,12 @@ describe('Logger', () => {
 
       const { domainLogger: logger } = createLogger(channels, level);
 
-      await logger.trace('trace', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.debug('debug', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.info('info', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.warn('warn', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.error('error', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.fatal('fatal', { metadata: { sourceClass: 'test', correlationId } });
+      await logger.trace('trace', { metadata: { correlationId } });
+      await logger.debug('debug', { metadata: { correlationId } });
+      await logger.info('info', { metadata: { correlationId } });
+      await logger.warn('warn', { metadata: { correlationId } });
+      await logger.error('error', { metadata: { correlationId } });
+      await logger.fatal('fatal', { metadata: { correlationId } });
 
       assert.deepStrictEqual(levels, {
         trace: false,
@@ -232,12 +249,12 @@ describe('Logger', () => {
 
       const { domainLogger: logger } = createLogger(channels, level);
 
-      await logger.trace('trace', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.debug('debug', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.info('info', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.warn('warn', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.error('error', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.fatal('fatal', { metadata: { sourceClass: 'test', correlationId } });
+      await logger.trace('trace', { metadata: { correlationId } });
+      await logger.debug('debug', { metadata: { correlationId } });
+      await logger.info('info', { metadata: { correlationId } });
+      await logger.warn('warn', { metadata: { correlationId } });
+      await logger.error('error', { metadata: { correlationId } });
+      await logger.fatal('fatal', { metadata: { correlationId } });
 
       assert.deepStrictEqual(levels, {
         trace: false,
@@ -264,12 +281,12 @@ describe('Logger', () => {
 
       const { domainLogger: logger } = createLogger(channels, level);
 
-      await logger.trace('trace', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.debug('debug', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.info('info', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.warn('warn', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.error('error', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.fatal('fatal', { metadata: { sourceClass: 'test', correlationId } });
+      await logger.trace('trace', { metadata: { correlationId } });
+      await logger.debug('debug', { metadata: { correlationId } });
+      await logger.info('info', { metadata: { correlationId } });
+      await logger.warn('warn', { metadata: { correlationId } });
+      await logger.error('error', { metadata: { correlationId } });
+      await logger.fatal('fatal', { metadata: { correlationId } });
 
       assert.deepStrictEqual(levels, {
         trace: false,
@@ -296,12 +313,12 @@ describe('Logger', () => {
 
       const { domainLogger: logger } = createLogger(channels, level);
 
-      await logger.trace('trace', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.debug('debug', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.info('info', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.warn('warn', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.error('error', { metadata: { sourceClass: 'test', correlationId } });
-      await logger.fatal('fatal', { metadata: { sourceClass: 'test', correlationId } });
+      await logger.trace('trace', { metadata: { correlationId } });
+      await logger.debug('debug', { metadata: { correlationId } });
+      await logger.info('info', { metadata: { correlationId } });
+      await logger.warn('warn', { metadata: { correlationId } });
+      await logger.error('error', { metadata: { correlationId } });
+      await logger.fatal('fatal', { metadata: { correlationId } });
 
       assert.deepStrictEqual(levels, {
         trace: false,
@@ -350,12 +367,12 @@ describe('Logger', () => {
           level: newLevel
         });
 
-        await domainLogger.trace('trace', { metadata: { sourceClass: 'test', correlationId } });
-        await domainLogger.debug('debug', { metadata: { sourceClass: 'test', correlationId } });
-        await domainLogger.info('info', { metadata: { sourceClass: 'test', correlationId } });
-        await domainLogger.warn('warn', { metadata: { sourceClass: 'test', correlationId } });
-        await domainLogger.error('error', { metadata: { sourceClass: 'test', correlationId } });
-        await domainLogger.fatal('fatal', { metadata: { sourceClass: 'test', correlationId } });
+        await domainLogger.trace('trace', { metadata: { correlationId } });
+        await domainLogger.debug('debug', { metadata: { correlationId } });
+        await domainLogger.info('info', { metadata: { correlationId } });
+        await domainLogger.warn('warn', { metadata: { correlationId } });
+        await domainLogger.error('error', { metadata: { correlationId } });
+        await domainLogger.fatal('fatal', { metadata: { correlationId } });
 
         assert.deepStrictEqual(levels, {
           trace: false,

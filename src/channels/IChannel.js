@@ -14,7 +14,7 @@
 
 /**
  * @callback LoggerChannelLevelCallback
- * @param {any} message
+ * @param {unknown} message
  * @param {LoggerOptions=} options
  * @returns {any}
  * 

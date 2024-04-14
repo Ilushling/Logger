@@ -1,22 +1,33 @@
 /**
- * @typedef {import('../ILevel.js').LoggerStringLevel} LoggerStringLevel
- * @typedef {import('../ILogger.js').LoggerOptions} LoggerOptions
- */
-
-/**
  * @typedef {import('./IChannel.js').ILoggerChannel} ILoggerChannel
  * @implements {ILoggerChannel}
  */
 export default class ConsoleLoggerChannel {
+  /** @type {string} */
+  #lineBreak;
+  /** @type {string} */
+  #lineTab;
+
+  constructor() {
+    this.#lineBreak = '\n';
+    this.#lineTab = '  ';
+  }
+
+  /**
+   * @typedef {import('../ILevel.js').LoggerStringLevel} LoggerStringLevel
+   * @typedef {import('../ILogger.js').LoggerOptions} LoggerOptions
+   */
+
   /**
    * @param {Uppercase<LoggerStringLevel>} level
-   * @param {any} message
+   * @param {unknown} message
    * @param {LoggerOptions=} options
    */
   #buildLoggerMessage(level, message, options) {
     const loggerMessageParts = [];
 
-    const dateTime = (new Date()).toISOString();
+    const currentDate = new Date();
+    const dateTime = currentDate.toISOString();
 
     const { prefix, postfix, metadata } = options ?? {};
 
@@ -29,10 +40,21 @@ export default class ConsoleLoggerChannel {
     } = metadata ?? {};
 
     const label = (() => {
-      if (organization != null && context != null && app != null) {
-        return `${organization}.${context}.${app}`;
+      const parts = [];
+
+      if (organization != null) {
+        parts.push(organization);
       }
+      if (context != null) {
+        parts.push(context);
+      }
+      if (app != null) {
+        parts.push(app);
+      }
+
+      return parts.join('.');
     })();
+
     if (label != null) {
       loggerMessageParts.push(`[${label}]`);
     }
@@ -67,11 +89,11 @@ export default class ConsoleLoggerChannel {
   }
 
   /**
-   * @param {any} message
+   * @param {unknown} message
    */
   #buildMessage(message) {
     if (message == null) {
-      return;
+      return message;
     }
 
     if (typeof message === 'object') {
@@ -84,7 +106,7 @@ export default class ConsoleLoggerChannel {
   }
 
   /**
-   * @param {any} value
+   * @param {unknown} value
    * @returns {any}
    */
   #plainValue(value) {
@@ -92,13 +114,19 @@ export default class ConsoleLoggerChannel {
       return value;
     }
 
-    if (typeof value === 'object') {
+    const typeofValue = typeof value;
+
+    if (typeofValue === 'object') {
       if (value instanceof Error) {
-        return this.#buildErrorMessage(value);
+        const plainError = this.#plainError(value);
+
+        return this.#serizalize(plainError);
+
+        // return this.#buildErrorMessage(value);
       }
 
       if (value instanceof Map) {
-        const object = /** @type {Record<string | number | symbol, any>} */({});
+        const object = /** @type {Record<PropertyKey, any>} */({});
 
         for (const [key, el] of value) {
           const plainKey = this.#plainValue(key);
@@ -119,7 +147,7 @@ export default class ConsoleLoggerChannel {
           acc[key] = this.#plainValue(el);
 
           return acc;
-        }, /** @type {Record<string | number | symbol, any>} */({}));
+        }, /** @type {Record<PropertyKey, any>} */({}));
       }
 
       if (Array.isArray(value)) {
@@ -129,12 +157,11 @@ export default class ConsoleLoggerChannel {
       return value;
     }
 
-    if (typeof value === 'bigint') {
+    if (typeofValue === 'bigint') {
       return +value.toString();
     }
 
-
-    if (typeof value === 'symbol') {
+    if (typeofValue === 'symbol') {
       return value.toString();
     }
 
@@ -142,39 +169,181 @@ export default class ConsoleLoggerChannel {
   }
 
   /**
+   * @typedef {{
+   *  name: string;
+   *  message: string;
+   *  stack?: string;
+   *  cause?: unknown;
+   * }} PlainError
    * @param {Error} error
    */
-  #buildErrorMessage(error) {
-    let resultMessage = '';
-    const delimiter = '\n';
+  #plainError(error) {
+    let currentError = this.#plainErrorObject(error);
 
-    let currentError = error;
-    while (currentError != null) {
-      const name = error.name;
-      const message = error.message;
+    const result = currentError;
+    let currentCause = currentError.cause;
 
-      resultMessage += `${name}: ${message}`;
+    while (currentCause != null) {
+      if (currentCause instanceof Error) {
+        const currentErrorCause = this.#plainErrorObject(currentCause);
 
-      const stack = error.stack;
-      if (stack != null) {
-        resultMessage += delimiter + stack;
-      }
+        currentError.cause = currentErrorCause;
 
-      const cause = currentError.cause;
-      if (!(cause instanceof Error)) {
+        currentError = currentErrorCause;
+        currentCause = currentError.cause;
+      } else if (Object.getPrototypeOf(currentCause)?.isPrototypeOf(Object)) {
+        currentError.cause = this.#plainErrorCause(
+          /** @type {Record<PropertyKey, unknown>} */(currentCause)
+        );
+
+        break;
+      } else {
+        currentError.cause = currentCause;
+
         break;
       }
-
-      resultMessage += delimiter + 'Caused by: ';
-
-      currentError = cause;
     }
 
-    return resultMessage;
+    return result;
   }
 
   /**
-   * @param {any} message
+   * @param {Error} error
+   * @returns {PlainError}
+   */
+  #plainErrorObject(error) {
+    /** @type {PlainError} */
+    const result = {
+      name: error.name,
+      message: error.message
+    };
+    'stack' in error && (result.stack = error.stack);
+    'cause' in error && (result.cause = error.cause);
+
+    return result;
+  }
+
+  /**
+   * @param {Record<PropertyKey, unknown>} cause
+   */
+  #plainErrorCause(cause) {
+    return Object.entries(cause)
+      .reduce((acc, [key, value]) => {
+        if (value instanceof Error) {
+          acc[key] = this.#plainError(value);
+
+          return acc;
+        }
+
+        if (value != null && Object.getPrototypeOf(value)?.isPrototypeOf(Object)) {
+          acc[key] = this.#plainErrorCause(/** @type {Record<PropertyKey, unknown>} */(value));
+
+          return acc;
+        }
+
+        acc[key] = value;
+
+        return acc;
+      },
+      /** @type {Record<PropertyKey, unknown>} */({})
+      );
+  }
+
+  /**
+   * @param {Error} error
+   */
+  #buildErrorMessage(error) {
+    let result = '';
+
+    const lineBreak = this.#lineBreak;
+    const lineTab = this.#lineTab;
+
+    const {
+      name,
+      message,
+      stack
+    } = error;
+
+    result += `${name}: ${message}`;
+    stack != null && (result += `${lineBreak}${lineTab}${stack}`);
+
+    if ('cause' in error) {
+      result += this.#buildErrorCauseMessage(error.cause);
+    }
+
+    return result;
+  }
+
+  /**
+   * @param {unknown} errorCause
+   */
+  #buildErrorCauseMessage(errorCause) {
+    const lineBreak = this.#lineBreak;
+    const lineTab = this.#lineTab;
+
+    let result = lineBreak + 'Caused by: ';
+
+    if (errorCause == null) {
+      return result;
+    }
+
+    const isError = typeof errorCause === 'object'
+      && 'name' in errorCause
+      && 'message' in errorCause
+      && 'stack' in errorCause;
+
+    if (isError) {
+      const {
+        name,
+        message,
+        stack
+      } = /** @type {Error} */ (errorCause);
+
+      result += `${name}: ${message}`;
+      stack != null && (result += `${lineBreak}${lineTab}${stack}`);
+
+      if ('cause' in errorCause) {
+        result += this.#buildErrorCauseMessage(errorCause.cause);
+      }
+    } else {
+      if (Object.getPrototypeOf(errorCause)?.isPrototypeOf(Object)) {
+        return this.#serizalize(Object.entries(errorCause)
+          .reduce((acc, [key, value]) => {
+            const isError = typeof value === 'object'
+              && 'name' in value
+              && 'message' in value
+              && 'stack' in value;
+
+            if (isError) {
+              acc[key] = this.#plainError(value);
+
+              return acc;
+            }
+
+            if (value != null && Object.getPrototypeOf(value)?.isPrototypeOf(Object)) {
+              acc[key] = this.#buildErrorCauseMessage(
+                /** @type {Record<PropertyKey, unknown>} */(value)
+              );
+
+              return acc;
+            }
+
+            acc[key] = value;
+
+            return acc;
+          },
+          /** @type {Record<PropertyKey, unknown>} */({})
+          ));
+      } else {
+        result += errorCause;
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * @param {unknown} message
    */
   #serizalize(message) {
     return JSON.stringify(message);

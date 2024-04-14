@@ -58,15 +58,15 @@
 
 /**
  * @callback LoggerLevelCallback
- * @param {any} message
+ * @param {unknown} message
  * @param {LoggerOptions=} options
  * @returns {Promise<void>}
  */
 
 /**
  * @typedef {object} LoggerOptions
- * @property {any=} prefix
- * @property {any=} postfix
+ * @property {unknown=} prefix
+ * @property {unknown=} postfix
  * @property {LoggerMetadata=} metadata
  * 
  * @typedef {object} LoggerMetadata
