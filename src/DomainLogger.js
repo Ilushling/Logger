@@ -1,17 +1,20 @@
 /**
- * @typedef {import('./IDomainLogger.js').DomainLoggerProperties} DomainLoggerProperties
- * @typedef {import('./IDomainLogger.js').DomainLoggerParams} DomainLoggerParams
- */
-
-/**
- * @typedef {import('./IDomainLogger.js').LoggerOptions} LoggerOptions
- */
-
-/**
- * @typedef {import('./IDomainLogger.js').IDomainLogger} IDomainLogger
  * @implements {IDomainLogger}
  */
 export default class DomainLogger {
+  /**
+   * @typedef {import('./IDomainLogger.js').DomainLoggerProperties} DomainLoggerProperties
+   * @typedef {import('./IDomainLogger.js').DomainLoggerParams} DomainLoggerParams
+   */
+
+  /**
+   * @typedef {import('./IDomainLogger.js').LoggerOptions} LoggerOptions
+   */
+
+  /**
+   * @typedef {import('./IDomainLogger.js').IDomainLogger} IDomainLogger
+   */
+
   // Dependencies
   /** @type {DomainLoggerProperties['logger']} */
   #logger;

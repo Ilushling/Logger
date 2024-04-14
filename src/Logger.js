@@ -1,23 +1,26 @@
 /**
- * @typedef {import('./ILevel.js').LoggerLevel} LoggerLevel
- * @typedef {import('./ILevel.js').LoggerStringLevel} LoggerStringLevel
- * @typedef {import('./ILevel.js').LoggerNumberLevel} LoggerNumberLevel
- */
-
-/**
- * @typedef {import('./ILogger.js').LoggerProperties} LoggerProperties
- * @typedef {import('./ILogger.js').LoggerParams} LoggerParams
- */
-
-/**
- * @typedef {import('./ILogger.js').LoggerOptions} LoggerOptions
- */
-
-/**
- * @typedef {import('./ILogger.js').ILogger} ILogger
  * @implements {ILogger}
  */
 export default class Logger {
+  /**
+   * @typedef {import('./ILevel.js').LoggerLevel} LoggerLevel
+   * @typedef {import('./ILevel.js').LoggerStringLevel} LoggerStringLevel
+   * @typedef {import('./ILevel.js').LoggerNumberLevel} LoggerNumberLevel
+   */
+
+  /**
+   * @typedef {import('./ILogger.js').LoggerProperties} LoggerProperties
+   * @typedef {import('./ILogger.js').LoggerParams} LoggerParams
+   */
+
+  /**
+   * @typedef {import('./ILogger.js').LoggerOptions} LoggerOptions
+   */
+
+  /**
+   * @typedef {import('./ILogger.js').ILogger} ILogger
+   */
+
   // Dependencies
   /** @type {LoggerProperties['channels']} */
   #channels;

@@ -1,10 +1,14 @@
 /**
- * @typedef {import('./IChannel.js').ILoggerChannel} ILoggerChannel
  * @implements {ILoggerChannel}
  */
 export default class ConsoleLoggerChannel {
+  /**
+   * @typedef {import('./IChannel.js').ILoggerChannel} ILoggerChannel
+   */
+
   /** @type {string} */
   #lineBreak;
+
   /** @type {string} */
   #lineTab;
 
