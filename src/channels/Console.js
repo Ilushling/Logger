@@ -6,22 +6,55 @@ export default class ConsoleLoggerChannel {
    * @typedef {import('./IChannel.js').ILoggerChannel} ILoggerChannel
    */
 
-  /** @type {string} */
-  #lineBreak;
-
-  /** @type {string} */
-  #lineTab;
-
-  constructor() {
-    this.#lineBreak = '\n';
-    this.#lineTab = '  ';
-  }
-
   /**
    * @typedef {import('../ILevel.js').LoggerStringLevel} LoggerStringLevel
    * @typedef {import('../ILogger.js').LoggerOptions} LoggerOptions
    */
 
+  /**
+   * @typedef {object} ConsoleLoggerChannelConfigs
+   * @property {boolean} isMask
+   * 
+   * @typedef {ConsoleLoggerChannelConfigs} ConsoleLoggerChannelConfigParams
+   * @typedef {ConsoleLoggerChannelConfigParams} ConsoleLoggerChannelSetupParams
+   */
+
+  /**
+   * @typedef {object} ConsoleLoggerChannelConst
+   * @property {string} lineBreak
+   * @property {string} lineTab
+   * 
+   * @typedef {ConsoleLoggerChannelConfigs & ConsoleLoggerChannelConst} ConsoleLoggerChannelProperties
+   */
+
+  // Configs
+  /** @type {ConsoleLoggerChannelProperties['isMask']} */
+  #isMask;
+
+  // Const
+  /** @type {ConsoleLoggerChannelProperties['lineBreak']} */
+  #lineBreak;
+
+  /** @type {ConsoleLoggerChannelProperties['lineTab']} */
+  #lineTab;
+
+  constructor() {
+    this.#isMask = false;
+
+    this.#lineBreak = '\n';
+    this.#lineTab = '  ';
+  }
+
+  /** @param {ConsoleLoggerChannelSetupParams} params */
+  setup({ isMask }) {
+    this.#isMask = isMask;
+  }
+
+  #getIsMask() {
+    return this.#isMask;
+  }
+
+  //#region Logic
   /**
    * @param {Uppercase<LoggerStringLevel>} level
    * @param {unknown} message
@@ -108,10 +141,12 @@ export default class ConsoleLoggerChannel {
 
     return message;
   }
+  //#endregion
 
+  //#region Plain
   /**
    * @param {unknown} value
-   * @returns {any}
+   * @returns {unknown}
    */
   #plainValue(value) {
     if (value == null) {
@@ -122,19 +157,18 @@ export default class ConsoleLoggerChannel {
 
     if (typeofValue === 'object') {
       if (value instanceof Error) {
-        const plainError = this.#plainError(value);
-
-        return this.#serizalize(plainError);
-
-        // return this.#buildErrorMessage(value);
+        return this.#plainError(value);
       }
 
       if (value instanceof Map) {
-        const object = /** @type {Record<PropertyKey, any>} */({});
+        const object = /** @type {Record<PropertyKey, unknown>} */({});
 
         for (const [key, el] of value) {
           const plainKey = this.#plainValue(key);
-          let serializedKey = typeof plainKey === 'object' ? this.#serizalize(plainKey) : plainKey;
+
+          const serializedKey = typeof plainKey === 'object'
+            ? this.#serizalize(plainKey)
+            : `${plainKey}`;
 
           object[serializedKey] = this.#plainValue(el);
         }
@@ -146,12 +180,16 @@ export default class ConsoleLoggerChannel {
         return [...value.values()].map(el => this.#plainValue(el));
       }
 
-      if (Object.getPrototypeOf(value)?.isPrototypeOf(Object)) {
+      if (this.#isModel(value)) {
+        return this.#plainModel(value);
+      }
+
+      if (this.#isPlainObject(value)) {
         return Object.entries(value).reduce((acc, [key, el]) => {
           acc[key] = this.#plainValue(el);
 
           return acc;
-        }, /** @type {Record<PropertyKey, any>} */({}));
+        }, /** @type {Record<PropertyKey, unknown>} */({}));
       }
 
       if (Array.isArray(value)) {
@@ -172,6 +210,38 @@ export default class ConsoleLoggerChannel {
     return value;
   }
 
+  /**
+   * @typedef {{ getProperties?: function(): unknown; getMaskedProperties?: function(): unknown; }} Model
+   * @param {unknown} value
+   * @returns {value is Model}
+   */
+  #isModel(value) {
+    if (value == null) {
+      return false;
+    }
+
+    if (typeof value !== 'object') {
+      return false;
+    }
+
+    return 'getProperties' in value && typeof value.getProperties === 'function'
+      && 'getMaskedProperties' in value && typeof value.getMaskedProperties === 'function'
+  }
+
+  /**
+   * @param {Model} model
+   */
+  #plainModel(model) {
+    const isMask = this.#getIsMask();
+
+    if (isMask) {
+      return model.getMaskedProperties?.();
+    }
+
+    return model.getProperties?.();
+  }
+
+  //#region Plain error
   /**
    * @typedef {{
    *  name: string;
@@ -195,14 +265,8 @@ export default class ConsoleLoggerChannel {
 
         currentError = currentErrorCause;
         currentCause = currentError.cause;
-      } else if (Object.getPrototypeOf(currentCause)?.isPrototypeOf(Object)) {
-        currentError.cause = this.#plainErrorCause(
-          /** @type {Record<PropertyKey, unknown>} */(currentCause)
-        );
-
-        break;
       } else {
-        currentError.cause = currentCause;
+        currentError.cause = this.#plainValue(currentCause);
 
         break;
       }
@@ -228,29 +292,27 @@ export default class ConsoleLoggerChannel {
   }
 
   /**
-   * @param {Record<PropertyKey, unknown>} cause
+   * @param {unknown} value
    */
-  #plainErrorCause(cause) {
-    return Object.entries(cause)
-      .reduce((acc, [key, value]) => {
-        if (value instanceof Error) {
-          acc[key] = this.#plainError(value);
+  #isPlainObject(value) {
+    if (value == null) {
+      return false;
+    }
 
-          return acc;
-        }
+    if (!Object.getPrototypeOf(value)?.isPrototypeOf(Object)) {
+      return false;
+    }
 
-        if (value != null && Object.getPrototypeOf(value)?.isPrototypeOf(Object)) {
-          acc[key] = this.#plainErrorCause(/** @type {Record<PropertyKey, unknown>} */(value));
+    return true;
+  }
+  //#endregion
+  //#endregion
 
-          return acc;
-        }
-
-        acc[key] = value;
-
-        return acc;
-      },
-      /** @type {Record<PropertyKey, unknown>} */({})
-      );
+  /**
+   * @param {unknown} message
+   */
+  #serizalize(message) {
+    return JSON.stringify(message);
   }
 
   /**
@@ -310,7 +372,7 @@ export default class ConsoleLoggerChannel {
         result += this.#buildErrorCauseMessage(errorCause.cause);
       }
     } else {
-      if (Object.getPrototypeOf(errorCause)?.isPrototypeOf(Object)) {
+      if (this.#isPlainObject(errorCause)) {
         return this.#serizalize(Object.entries(errorCause)
           .reduce((acc, [key, value]) => {
             const isError = typeof value === 'object'
@@ -324,7 +386,7 @@ export default class ConsoleLoggerChannel {
               return acc;
             }
 
-            if (value != null && Object.getPrototypeOf(value)?.isPrototypeOf(Object)) {
+            if (this.#isPlainObject(value)) {
               acc[key] = this.#buildErrorCauseMessage(
                 /** @type {Record<PropertyKey, unknown>} */(value)
               );
@@ -346,13 +408,7 @@ export default class ConsoleLoggerChannel {
     return result;
   }
 
-  /**
-   * @param {unknown} message
-   */
-  #serizalize(message) {
-    return JSON.stringify(message);
-  }
-
+  //#region Interface
   /** @type {ILoggerChannel['trace']} */
   trace(message, options) {
     console.debug(this.#buildLoggerMessage('TRACE', message, options));
@@ -382,4 +438,5 @@ export default class ConsoleLoggerChannel {
   fatal(message, options) {
     console.error(this.#buildLoggerMessage('FATAL', message, options));
   }
+  //#endregion
 }
