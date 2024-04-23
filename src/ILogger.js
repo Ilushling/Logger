@@ -1,40 +1,4 @@
 /**
- * @typedef {import('./ILevel.js').LoggerLevel} LoggerLevel
- * @typedef {import('./ILevel.js').LoggerStringLevel} LoggerStringLevel
- * @typedef {import('./ILevel.js').LoggerNumberLevel} LoggerNumberLevel
- */
-
-/**
- * @typedef {import('./channels/IChannel.js').LoggerChannels} LoggerChannels
- * 
- * @typedef {import('./channels/IChannel.js').LoggerChannelConfigs} LoggerChannelConfigs
- * 
- * @typedef {import('./channels/IChannel.js').LoggerChannelConfigParams} LoggerChannelConfigParams
- * @typedef {import('./channels/IChannel.js').LoggerChannelsConfigParams} LoggerChannelsConfigParams
- */
-
-/**
- * @typedef {object} LoggerDependencies
- * @property {LoggerChannels} channels
- * 
- * @typedef {object} LoggerConfigs
- * @property {LoggerNumberLevel[]} levels
- * @property {Record<string, LoggerChannelConfigs>} channelsConfigs
- * 
- * @typedef {LoggerDependencies & LoggerConfigs} LoggerProperties
- * 
- * @typedef {LoggerDependencies} LoggerParams
- * 
- * @typedef {object} LoggerConfigParams
- * @property {LoggerLevel=} level
- * @property {LoggerStringLevel[]=} levels
- * @property {LoggerChannelsConfigParams=} channels
- * 
- * @typedef LoggerSetupParams
- * @property {LoggerConfigParams} configs
- */
-
-/**
  * @typedef {object} ILogger
  * @property {(params: LoggerSetupParams) => void} setup
  * @property {() => LoggerStringLevel[]} getLevels
@@ -53,7 +17,34 @@
  */
 
 /**
+ * @typedef {object} LoggerDependencies
+ * @property {LoggerChannels} channels
+ * 
+ * @typedef {LoggerDependencies & LoggerConfigs} LoggerProperties
+ * 
+ * @typedef {LoggerDependencies} LoggerParams
+ * 
+ * @typedef {object} LoggerSetupParams
+ * @property {LoggerLevel=} level
+ * @property {LoggerStringLevel[]=} levels
+ * @property {LoggerChannelsConfigParams=} channels
+ * 
+ * @typedef {object} LoggerConfigs
+ * @property {LoggerNumberLevel[]} levels
+ * @property {Record<string, LoggerChannelConfigs>} channelsConfigs
+ */
+
+/**
  * @typedef {new (params: LoggerParams) => ILogger} ILoggerConstructable
+ */
+
+/**
+ * @typedef {import('./channels/IChannel.js').LoggerChannels} LoggerChannels
+ * 
+ * @typedef {import('./channels/IChannel.js').LoggerChannelConfigs} LoggerChannelConfigs
+ * 
+ * @typedef {import('./channels/IChannel.js').LoggerChannelConfigParams} LoggerChannelConfigParams
+ * @typedef {import('./channels/IChannel.js').LoggerChannelsConfigParams} LoggerChannelsConfigParams
  */
 
 /**
@@ -75,4 +66,10 @@
  * @property {string=} app - Application name
  * @property {string=} sourceClass - Class name
  * @property {string=} correlationId - Correlation Id
+ */
+
+/**
+ * @typedef {import('./ILevel.js').LoggerLevel} LoggerLevel
+ * @typedef {import('./ILevel.js').LoggerStringLevel} LoggerStringLevel
+ * @typedef {import('./ILevel.js').LoggerNumberLevel} LoggerNumberLevel
  */

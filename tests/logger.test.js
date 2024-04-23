@@ -31,15 +31,13 @@ function createLogger(channels, level) {
   });
 
   logger.setup({
-    configs: {
-      level,
-      channels: {
-        console: {
-          level
-        },
-        test: {
-          level
-        }
+    level,
+    channels: {
+      console: {
+        level
+      },
+      test: {
+        level
       }
     }
   });
@@ -49,15 +47,13 @@ function createLogger(channels, level) {
   });
 
   domainLogger.setup({
-    configs: {
-      options: {
-        metadata: {
-          organization: 'components',
-          context: 'logger',
-          app: 'test',
+    options: {
+      metadata: {
+        organization: 'components',
+        context: 'logger',
+        app: 'test',
 
-          sourceClass: 'test'
-        }
+        sourceClass: 'test'
       }
     }
   });
@@ -344,20 +340,7 @@ describe('Logger', () => {
           fatal: false
         };
 
-        /** @type {ILoggerChannel} */
-        const testChannel = {
-          trace: message => levels.trace = true,
-          debug: message => levels.debug = true,
-          info: message => levels.info = true,
-          warn: message => levels.warn = true,
-          error: message => levels.error = true,
-          fatal: message => levels.fatal = true
-        };
-
-        /** @type {LoggerChannels} */
-        const channels = {
-          test: testChannel
-        };
+        const channels = createChannels(levels);
 
         const { logger, domainLogger } = createLogger(channels, level);
 
@@ -366,6 +349,42 @@ describe('Logger', () => {
         logger.setChannelConfigs('test', {
           level: newLevel
         });
+
+        await domainLogger.trace('trace', { metadata: { correlationId } });
+        await domainLogger.debug('debug', { metadata: { correlationId } });
+        await domainLogger.info('info', { metadata: { correlationId } });
+        await domainLogger.warn('warn', { metadata: { correlationId } });
+        await domainLogger.error('error', { metadata: { correlationId } });
+        await domainLogger.fatal('fatal', { metadata: { correlationId } });
+
+        assert.deepStrictEqual(levels, {
+          trace: false,
+          debug: false,
+          info: true,
+          warn: true,
+          error: true,
+          fatal: true
+        });
+      });
+
+      it('domain info', async () => {
+        const levels = {
+          trace: false,
+          debug: false,
+          info: false,
+          warn: false,
+          error: false,
+          fatal: false
+        };
+
+        const channels = createChannels(levels);
+
+        const { logger, domainLogger } = createLogger(channels, 'trace');
+
+        logger.setChannelConfigs('test', {
+          level: 'debug'
+        });
+        domainLogger.setLevel('info');
 
         await domainLogger.trace('trace', { metadata: { correlationId } });
         await domainLogger.debug('debug', { metadata: { correlationId } });

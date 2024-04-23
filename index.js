@@ -16,10 +16,10 @@ export {
 
 /**
  * @typedef {import('./src/ILogger.js').ILogger} ILogger
- * @typedef {import('./src/ILogger.js').LoggerConfigParams} LoggerConfigParams
+ * @typedef {import('./src/ILogger.js').LoggerSetupParams} LoggerSetupParams
  * 
  * @typedef {import('./src/IDomainLogger.js').IDomainLogger} IDomainLogger
- * @typedef {import('./src/IDomainLogger.js').DomainLoggerConfigParams} DomainLoggerConfigParams
+ * @typedef {import('./src/IDomainLogger.js').DomainLoggerSetupParams} DomainLoggerSetupParams
  */
 
 /**

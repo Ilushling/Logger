@@ -83,29 +83,28 @@ const level = 'trace';
 const levels = ['trace', 'debug', 'info', 'warn', 'error', 'fatal'];
 
 logger.setup({
-  configs: {
-    level,
-    channels: {
-      console: {
-        level
-      },
-      console2: {
-        levels
-      }
+  level,
+  channels: {
+    console: {
+      level
+    },
+    console2: {
+      levels
     }
   }
 });
 
 domainLogger.setup({
-  configs: {
-    options: {
-      prefix: 'prefix',
-      postfix: 'postfix',
-      metadata: {
-        organization: 'Organization',
-        context: 'Context',
-        app: 'App'
-      }
+  level,
+  options: {
+    prefix: 'prefix',
+    postfix: 'postfix',
+    metadata: {
+      organization: 'Organization',
+      context: 'Context',
+      app: 'App',
+
+      sourceClass: 'ClassName'
     }
   }
 });
@@ -153,10 +152,10 @@ or
 ```js
 const correlationId = 'requestId';
 
-domainLogger.trace('Trace message', { metadata: { sourceClass: 'ClassName', correlationId } });
-domainLogger.debug('Debug message', { metadata: { sourceClass: 'ClassName', correlationId } });
-domainLogger.info('Info message', { metadata: { sourceClass: 'ClassName', correlationId } });
-domainLogger.warn('Warn message', { metadata: { sourceClass: 'ClassName', correlationId } });
-domainLogger.error('Error message', { metadata: { sourceClass: 'ClassName', correlationId } });
-domainLogger.fatal('Fatal message', { metadata: { sourceClass: 'ClassName', correlationId } });
+domainLogger.trace('Trace message', { metadata: { correlationId } });
+domainLogger.debug('Debug message', { metadata: { correlationId } });
+domainLogger.info('Info message', { metadata: { correlationId } });
+domainLogger.warn('Warn message', { metadata: { correlationId } });
+domainLogger.error('Error message', { metadata: { correlationId } });
+domainLogger.fatal('Fatal message', { metadata: { correlationId } });
 ```
