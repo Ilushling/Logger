@@ -12,27 +12,27 @@ export default class LoggerFactory {
    */
 
   /** @type {LoggerFactoryProperties['Logger']} */
-  #Class;
+  #Logger;
 
   /** @type {LoggerFactoryProperties['DomainLogger']} */
-  #DomainClass;
+  #DomainLogger;
 
   /** @param {LoggerFactoryParams} params */
   constructor({
     Logger,
     DomainLogger
   }) {
-    this.#Class = Logger;
-    this.#DomainClass = DomainLogger;
+    this.#Logger = Logger;
+    this.#DomainLogger = DomainLogger;
   }
 
   /** @type {ILoggerFactory['create']} */
   create(params) {
-    return new this.#Class(params);
+    return new this.#Logger(params);
   }
 
   /** @type {ILoggerFactory['createDomain']} */
   createDomain(params) {
-    return new this.#DomainClass(params);
+    return new this.#DomainLogger(params);
   }
 }

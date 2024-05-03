@@ -16,7 +16,7 @@
  * @callback LoggerChannelLevelCallback
  * @param {unknown} message
  * @param {LoggerOptions=} options
- * @returns {any}
+ * @returns {Promise<void> | void}
  * 
  * @typedef {Record<string, ILoggerChannel>} LoggerChannels
  * 
