@@ -10,7 +10,11 @@
     "test": "node --test"
   },
   "keywords": [
-    "logger"
+    "logger",
+    "domain",
+    "channel",
+    "factory",
+    "level"
   ],
   "repository": {
     "type": "git",
@@ -21,6 +25,6 @@
   },
   "homepage": "https://github.com/Ilushling/Logger#readme",
   "devDependencies": {
-    "@types/node": "^20.12.7"
+    "@types/node": "^20.12.8"
   }
 }
