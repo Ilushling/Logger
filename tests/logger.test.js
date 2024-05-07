@@ -31,15 +31,7 @@ function createLogger(channels, level) {
   });
 
   logger.setup({
-    level,
-    channels: {
-      console: {
-        level
-      },
-      test: {
-        level
-      }
-    }
+    level
   });
 
   const domainLogger = loggerFactory.createDomain({
@@ -71,12 +63,29 @@ function createLogger(channels, level) {
 function createChannels(levels) {
   /** @type {ILoggerChannel} */
   const testChannel = {
-    trace: message => levels.trace = true,
-    debug: message => levels.debug = true,
-    info: message => levels.info = true,
-    warn: message => levels.warn = true,
-    error: message => levels.error = true,
-    fatal: message => levels.fatal = true
+    setup: () => { },
+
+    trace: message => { levels.trace = true },
+    debug: message => { levels.debug = true },
+    info: message => { levels.info = true },
+    warn: message => { levels.warn = true },
+    error: message => { levels.error = true },
+    fatal: message => { levels.fatal = true },
+
+    getLevels: () => Object.entries(levels)
+      .reduce((acc, entries) => {
+        const level = /** @type {LoggerStringLevel} */ (entries[0]);
+        const isEnabled = entries[1];
+        if (!isEnabled) {
+          return acc;
+        }
+
+        acc.push(level);
+
+        return acc;
+      }, /** @type {LoggerStringLevel[]} */ ([])),
+    setLevel: () => { },
+    setLevels: () => { }
   };
 
   return {
@@ -346,9 +355,6 @@ describe('Logger', () => {
 
         const newLevel = 'info';
         logger.setLevel(newLevel);
-        logger.setChannelConfigs('test', {
-          level: newLevel
-        });
 
         await domainLogger.trace('trace', { metadata: { correlationId } });
         await domainLogger.debug('debug', { metadata: { correlationId } });
@@ -381,9 +387,6 @@ describe('Logger', () => {
 
         const { logger, domainLogger } = createLogger(channels, 'trace');
 
-        logger.setChannelConfigs('test', {
-          level: 'debug'
-        });
         domainLogger.setLevel('info');
 
         await domainLogger.trace('trace', { metadata: { correlationId } });

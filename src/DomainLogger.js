@@ -1,10 +1,26 @@
 /**
+ * @typedef {new (params: DomainLoggerParams) => IDomainLogger} IDomainLoggerConstructable
+ * @typedef {DomainLoggerDependencies} DomainLoggerParams
+ */
+
+/**
  * @implements {IDomainLogger}
  */
 export default class DomainLogger {
   /**
-   * @typedef {import('./IDomainLogger.js').DomainLoggerProperties} DomainLoggerProperties
-   * @typedef {import('./IDomainLogger.js').DomainLoggerParams} DomainLoggerParams
+   * @typedef {import('./IDomainLogger.js').IDomainLogger} IDomainLogger
+   * @typedef {DomainLoggerDependencies & DomainLoggerConfigs} DomainLoggerProperties
+   * 
+   * @typedef {object} DomainLoggerDependencies
+   * @property {ILogger | IDomainLogger} logger
+   * 
+   * @typedef {object} DomainLoggerConfigs
+   * @property {LoggerNumberLevel[]} levels
+   * @property {LoggerOptions=} options
+   */
+
+  /**
+   * @typedef {import('./ILogger.js').ILogger} ILogger
    */
 
   /**
@@ -12,10 +28,6 @@ export default class DomainLogger {
    * @typedef {import('./ILevel.js').LoggerLevel} LoggerLevel
    * @typedef {import('./ILevel.js').LoggerNumberLevel} LoggerNumberLevel
    * @typedef {import('./ILevel.js').LoggerStringLevel} LoggerStringLevel
-   */
-
-  /**
-   * @typedef {import('./IDomainLogger.js').IDomainLogger} IDomainLogger
    */
 
   // Dependencies
@@ -74,7 +86,6 @@ export default class DomainLogger {
     this.#levels = [];
   }
 
-  //#region Configs
   /** @type {IDomainLogger['setup']} */
   setup({
     level,
@@ -89,62 +100,6 @@ export default class DomainLogger {
 
     this.#options = options;
   }
-
-  /** @type {IDomainLogger['getLevels']} */
-  getLevels() {
-    return this.#levels.map(level => this.#numberLevelToString(level));
-  }
-
-  /** @type {IDomainLogger['setLevel']} */
-  setLevel(level) {
-    const LEVELS = this.#LEVELS;
-
-    if (!LEVELS.includes(level)) {
-      throw this.#createInvalidLevelError(level);
-    }
-
-    const currentLevels = this.#levels;
-    currentLevels.length = 0;
-
-    const numberLevel = this.#levelToNumber(level);
-
-    if (numberLevel == null) {
-      return;
-    }
-
-    /** @type {LoggerNumberLevel} */
-    let i = numberLevel;
-    let count = this.#MAX_NUMBER_LEVEL + 1;
-    for (; i < count; i++) {
-      currentLevels.push(i);
-    }
-  }
-
-  /** @type {IDomainLogger['setLevels']} */
-  setLevels(levels) {
-    const NUMBER_LEVELS = this.#NUMBER_LEVELS;
-
-    levels.forEach(level => {
-      if (!(level in NUMBER_LEVELS)) {
-        throw this.#createInvalidLevelError(level);
-      }
-    });
-
-    const currentLevels = this.#levels;
-    currentLevels.length = 0;
-
-    if (levels.length === 0) {
-      return;
-    }
-
-    for (let i = 0, count = levels.length; i < count; i++) {
-      const stringLevel = levels[i];
-      const numberLevel = this.#stringLevelToNumber(stringLevel);
-
-      currentLevels.push(numberLevel);
-    }
-  }
-  //#endregion
 
   //#region Interface
   /** @type {IDomainLogger['trace']} */
@@ -199,6 +154,63 @@ export default class DomainLogger {
     }
 
     await this.#logger.fatal(message, this.#handleOptions(options));
+  }
+  //#endregion
+
+  //#region Configs
+  /** @type {IDomainLogger['getLevels']} */
+  getLevels() {
+    return this.#levels.map(level => this.#numberLevelToString(level));
+  }
+
+  /** @type {IDomainLogger['setLevel']} */
+  setLevel(level) {
+    const LEVELS = this.#LEVELS;
+
+    if (!LEVELS.includes(level)) {
+      throw this.#createInvalidLevelError(level);
+    }
+
+    const currentLevels = this.#levels;
+    currentLevels.length = 0;
+
+    const numberLevel = this.#levelToNumber(level);
+
+    if (numberLevel == null) {
+      return;
+    }
+
+    /** @type {LoggerNumberLevel} */
+    let i = numberLevel;
+    let count = this.#MAX_NUMBER_LEVEL + 1;
+    for (; i < count; i++) {
+      currentLevels.push(i);
+    }
+  }
+
+  /** @type {IDomainLogger['setLevels']} */
+  setLevels(levels) {
+    const NUMBER_LEVELS = this.#NUMBER_LEVELS;
+
+    levels.forEach(level => {
+      if (!(level in NUMBER_LEVELS)) {
+        throw this.#createInvalidLevelError(level);
+      }
+    });
+
+    const currentLevels = this.#levels;
+    currentLevels.length = 0;
+
+    if (levels.length === 0) {
+      return;
+    }
+
+    for (let i = 0, count = levels.length; i < count; i++) {
+      const stringLevel = levels[i];
+      const numberLevel = this.#stringLevelToNumber(stringLevel);
+
+      currentLevels.push(numberLevel);
+    }
   }
   //#endregion
 

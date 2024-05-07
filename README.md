@@ -30,12 +30,29 @@ import { Logger, DomainLogger, ConsoleLoggerChannel } from 'mainlog';
 
 /** @type {ILoggerChannel} */ 
 const consoleChannel = {
+  setup: () => { },
+
   trace: message => console.log(message),
   debug: message => console.debug(message),
   info: message => console.info(message),
   warn: message => console.warn(message),
   error: message => console.error(message),
-  fatal: message => console.error(message)
+  fatal: message => console.error(message),
+
+  getLevels: () => Object.entries(levels)
+    .reduce((acc, entries) => {
+      const level = /** @type {LoggerStringLevel} */ (entries[0]);
+      const isEnabled = entries[1];
+      if (!isEnabled) {
+        return acc;
+      }
+
+      acc.push(level);
+
+      return acc;
+    }, /** @type {LoggerStringLevel[]} */ ([])),
+  setLevel: () => { },
+  setLevels: () => { }
 };
 ```
 
@@ -83,15 +100,7 @@ const level = 'trace';
 const levels = ['trace', 'debug', 'info', 'warn', 'error', 'fatal'];
 
 logger.setup({
-  level,
-  channels: {
-    console: {
-      level
-    },
-    console2: {
-      levels
-    }
-  }
+  level
 });
 
 domainLogger.setup({
@@ -114,26 +123,12 @@ or
 
 ```js
 logger.setLevels(levels);
-logger.setChannelsConfigs({
-  channel: {
-    level
-  },
-  channel2: {
-    levels
-  }
-});
 ```
 
 or
 
 ```js
 logger.setLevel(level);
-logger.setChannelConfigs('console', {
-  level
-});
-logger.setChannelConfigs('console2', {
-  levels
-});
 ```
 
 ### Commands

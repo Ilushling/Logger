@@ -1,60 +1,276 @@
 /**
+ * @typedef {new () => ILoggerChannel} ConsoleLoggerChannelConstructable
+ */
+
+/**
  * @implements {ILoggerChannel}
  */
 export default class ConsoleLoggerChannel {
   /**
    * @typedef {import('./IChannel.js').ILoggerChannel} ILoggerChannel
+   * 
+   * @typedef {ConsoleLoggerChannelConfigs & ConsoleLoggerChannelConstants} ConsoleLoggerChannelProperties
+   * 
+   * @typedef {object} ConsoleLoggerChannelConfigs
+   * @property {LoggerNumberLevel[]} levels
+   * @property {boolean} isMask
+   * 
+   * @typedef {object} ConsoleLoggerChannelConstants
+   * @property {string} lineBreak
+   * @property {string} lineTab
+   * @property {Record<LoggerStringLevel, LoggerNumberLevel>} NUMBER_LEVELS
+   * @property {Record<LoggerNumberLevel, LoggerStringLevel>} STRING_LEVELS
+   * @property {LoggerLevel[]} LEVELS
+   * @property {LoggerNumberLevel} MAX_NUMBER_LEVEL
    */
 
   /**
+   * @typedef {import('../ILevel.js').LoggerLevel} LoggerLevel
    * @typedef {import('../ILevel.js').LoggerStringLevel} LoggerStringLevel
+   * @typedef {import('../ILevel.js').LoggerNumberLevel} LoggerNumberLevel
+   */
+
+  /**
    * @typedef {import('../ILogger.js').LoggerOptions} LoggerOptions
    */
 
-  /**
-   * @typedef {object} ConsoleLoggerChannelConfigs
-   * @property {boolean} isMask
-   * 
-   * @typedef {ConsoleLoggerChannelConfigs} ConsoleLoggerChannelConfigParams
-   * @typedef {ConsoleLoggerChannelConfigParams} ConsoleLoggerChannelSetupParams
-   */
-
-  /**
-   * @typedef {object} ConsoleLoggerChannelConst
-   * @property {string} lineBreak
-   * @property {string} lineTab
-   * 
-   * @typedef {ConsoleLoggerChannelConfigs & ConsoleLoggerChannelConst} ConsoleLoggerChannelProperties
-   */
-
   // Configs
+  /** @type {ConsoleLoggerChannelProperties['levels']} */
+  #levels;
+
   /** @type {ConsoleLoggerChannelProperties['isMask']} */
   #isMask;
 
-  // Const
+  // Constants
   /** @type {ConsoleLoggerChannelProperties['lineBreak']} */
   #lineBreak;
 
   /** @type {ConsoleLoggerChannelProperties['lineTab']} */
   #lineTab;
 
+  /** @type {ConsoleLoggerChannelProperties['NUMBER_LEVELS']} */
+  #NUMBER_LEVELS = {
+    trace: 1,
+    debug: 2,
+    info: 3,
+    warn: 4,
+    error: 5,
+    fatal: 6
+  };
+
+  /** @type {ConsoleLoggerChannelProperties['STRING_LEVELS']} */
+  #STRING_LEVELS = {
+    1: 'trace',
+    2: 'debug',
+    3: 'info',
+    4: 'warn',
+    5: 'error',
+    6: 'fatal'
+  };
+
+  /** @type {ConsoleLoggerChannelProperties['LEVELS']} */
+  #LEVELS = [
+    'all',
+    'trace',
+    'debug',
+    'info',
+    'warn',
+    'error',
+    'fatal',
+    'off'
+  ];
+
+  /** @type {ConsoleLoggerChannelProperties['MAX_NUMBER_LEVEL']} */
+  #MAX_NUMBER_LEVEL = 6;
+
   constructor() {
+    this.#levels = [];
     this.#isMask = false;
 
     this.#lineBreak = '\n';
     this.#lineTab = '  ';
   }
 
-  /** @param {ConsoleLoggerChannelSetupParams} params */
-  setup({ isMask }) {
+  /** @type {ILoggerChannel['setup']} */
+  setup({ level, levels, isMask }) {
+    if (level != null) {
+      this.setLevel(level);
+    } else if (levels != null) {
+      this.setLevels(levels);
+    }
+
     this.#isMask = isMask;
   }
 
-  #getIsMask() {
-    return this.#isMask;
+  //#region Interface
+  /** @type {ILoggerChannel['trace']} */
+  trace(message, options) {
+    if (!this.#canLog(this.#NUMBER_LEVELS.trace)) {
+      return;
+    }
+
+    console.debug(this.#buildLoggerMessage('TRACE', message, options));
   }
 
+  /** @type {ILoggerChannel['debug']} */
+  debug(message, options) {
+    if (!this.#canLog(this.#NUMBER_LEVELS.debug)) {
+      return;
+    }
+
+    console.debug(this.#buildLoggerMessage('DEBUG', message, options));
+  }
+
+  /** @type {ILoggerChannel['info']} */
+  info(message, options) {
+    if (!this.#canLog(this.#NUMBER_LEVELS.info)) {
+      return;
+    }
+
+    console.info(this.#buildLoggerMessage('INFO', message, options));
+  }
+
+  /** @type {ILoggerChannel['warn']} */
+  warn(message, options) {
+    if (!this.#canLog(this.#NUMBER_LEVELS.warn)) {
+      return;
+    }
+
+    console.warn(this.#buildLoggerMessage('WARN', message, options));
+  }
+
+  /** @type {ILoggerChannel['error']} */
+  error(message, options) {
+    if (!this.#canLog(this.#NUMBER_LEVELS.error)) {
+      return;
+    }
+
+    console.error(this.#buildLoggerMessage('ERROR', message, options));
+  }
+
+  /** @type {ILoggerChannel['fatal']} */
+  fatal(message, options) {
+    if (!this.#canLog(this.#NUMBER_LEVELS.fatal)) {
+      return;
+    }
+
+    console.error(this.#buildLoggerMessage('FATAL', message, options));
+  }
+  //#endregion
+
+  //#region Configs
+  /** @type {ILoggerChannel['getLevels']} */
+  getLevels() {
+    return this.#levels.map(level => this.#numberLevelToString(level));
+  }
+
+  /** @type {ILoggerChannel['setLevel']} */
+  setLevel(level) {
+    const LEVELS = this.#LEVELS;
+
+    if (!LEVELS.includes(level)) {
+      throw this.#createInvalidLevelError(level);
+    }
+
+    const currentLevels = this.#levels;
+    currentLevels.length = 0;
+
+    const numberLevel = this.#levelToNumber(level);
+
+    if (numberLevel == null) {
+      return;
+    }
+
+    /** @type {LoggerNumberLevel} */
+    let i = numberLevel;
+    let count = this.#MAX_NUMBER_LEVEL + 1;
+    for (; i < count; i++) {
+      currentLevels.push(i);
+    }
+  }
+
+  /** @type {ILoggerChannel['setLevels']} */
+  setLevels(levels) {
+    const NUMBER_LEVELS = this.#NUMBER_LEVELS;
+
+    levels.forEach(level => {
+      if (!(level in NUMBER_LEVELS)) {
+        throw this.#createInvalidLevelError(level);
+      }
+    });
+
+    const currentLevels = this.#levels;
+    currentLevels.length = 0;
+
+    if (levels.length === 0) {
+      return;
+    }
+
+    for (let i = 0, count = levels.length; i < count; i++) {
+      const stringLevel = levels[i];
+      const numberLevel = this.#stringLevelToNumber(stringLevel);
+
+      currentLevels.push(numberLevel);
+    }
+  }
+  //#endregion
+
   //#region Logic
+  //#region Level
+  /**
+   * @param {LoggerStringLevel} level
+   */
+  #stringLevelToNumber(level) {
+    return this.#NUMBER_LEVELS[level];
+  }
+
+  /**
+   * @param {LoggerNumberLevel} level
+   */
+  #numberLevelToString(level) {
+    return this.#STRING_LEVELS[level];
+  }
+
+  /**
+   * @param {LoggerLevel} level
+   */
+  #levelToNumber(level) {
+    const stringLevel = level === 'all' ? 'trace' : level;
+
+    if (stringLevel === 'off') {
+      return;
+    }
+
+    return this.#NUMBER_LEVELS[stringLevel];
+  }
+
+  /**
+   * @param {LoggerLevel | LoggerNumberLevel} level
+   */
+  #createInvalidLevelError(level) {
+    const LEVELS = this.#LEVELS;
+
+    const levelsMessage = LEVELS.map(level => `'${level}'`).join(', ');
+
+    return Object.assign(new Error(`Level must be: ${levelsMessage}`), {
+      name: 'InvalidLevelError'
+    });
+  }
+  //#endregion
+
+  /**
+   * @param {LoggerNumberLevel} level
+   */
+  #canLog(level) {
+    const currentLevels = this.#levels;
+    if (!currentLevels.includes(level)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  //#region Message
   /**
    * @param {Uppercase<LoggerStringLevel>} level
    * @param {unknown} message
@@ -241,6 +457,10 @@ export default class ConsoleLoggerChannel {
     return model.getProperties?.();
   }
 
+  #getIsMask() {
+    return this.#isMask;
+  }
+
   //#region Plain error
   /**
    * @typedef {{
@@ -406,37 +626,6 @@ export default class ConsoleLoggerChannel {
     }
 
     return result;
-  }
-
-  //#region Interface
-  /** @type {ILoggerChannel['trace']} */
-  trace(message, options) {
-    console.debug(this.#buildLoggerMessage('TRACE', message, options));
-  }
-
-  /** @type {ILoggerChannel['debug']} */
-  debug(message, options) {
-    console.debug(this.#buildLoggerMessage('DEBUG', message, options));
-  }
-
-  /** @type {ILoggerChannel['info']} */
-  info(message, options) {
-    console.info(this.#buildLoggerMessage('INFO', message, options));
-  }
-
-  /** @type {ILoggerChannel['warn']} */
-  warn(message, options) {
-    console.warn(this.#buildLoggerMessage('WARN', message, options));
-  }
-
-  /** @type {ILoggerChannel['error']} */
-  error(message, options) {
-    console.error(this.#buildLoggerMessage('ERROR', message, options));
-  }
-
-  /** @type {ILoggerChannel['fatal']} */
-  fatal(message, options) {
-    console.error(this.#buildLoggerMessage('FATAL', message, options));
   }
   //#endregion
 }

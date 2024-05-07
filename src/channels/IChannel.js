@@ -1,31 +1,35 @@
 /**
- * @typedef {import('../ILevel.js').LoggerLevel} LoggerLevel
- * @typedef {import('../ILevel.js').LoggerStringLevel} LoggerStringLevel
- * @typedef {import('../ILevel.js').LoggerNumberLevel} LoggerNumberLevel
+ * @typedef {object} ILoggerChannel
+ * @property {(params: LoggerChannelSetupParams) => void} setup
+ * 
+ * @property {LoggerLevelCallback} trace
+ * @property {LoggerLevelCallback} debug
+ * @property {LoggerLevelCallback} info
+ * @property {LoggerLevelCallback} warn
+ * @property {LoggerLevelCallback} error
+ * @property {LoggerLevelCallback} fatal
+ * 
+ * @property {() => LoggerStringLevel[]} getLevels
+ * @property {(level: LoggerLevel) => void} setLevel
+ * @property {(levels: LoggerStringLevel[]) => void} setLevels
  */
 
 /**
- * @typedef {import('../ILogger.js').LoggerOptions} LoggerOptions
- */
-
-/**
- * @typedef {Record<LoggerStringLevel, LoggerChannelLevelCallback>} ILoggerChannel
- */
-
-/**
- * @callback LoggerChannelLevelCallback
- * @param {unknown} message
- * @param {LoggerOptions=} options
- * @returns {Promise<void> | void}
- * 
- * @typedef {Record<string, ILoggerChannel>} LoggerChannels
- * 
- * @typedef {object} LoggerChannelConfigs
- * @property {LoggerNumberLevel[]} levels
- * 
- * @typedef {object} LoggerChannelConfigParams
+ * @typedef {object} LoggerChannelSetupParams
  * @property {LoggerLevel=} level
  * @property {LoggerStringLevel[]=} levels
- * 
- * @typedef {Record<string, LoggerChannelConfigParams>} LoggerChannelsConfigParams
+ * @property {boolean} isMask
+ */
+
+/**
+ * @typedef {import('../ILevel.js').LoggerLevel} LoggerLevel
+ * @typedef {import('../ILevel.js').LoggerStringLevel} LoggerStringLevel
+ */
+
+/**
+ * @typedef {import('../ILogger.js').LoggerLevelCallback} LoggerLevelCallback
+ */
+
+/**
+ * @typedef {Record<string, ILoggerChannel>} LoggerChannels
  */

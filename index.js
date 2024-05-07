@@ -34,12 +34,9 @@ export {
 
 /**
  * @typedef {import('./src/channels/IChannel.js').ILoggerChannel} ILoggerChannel
+ * @typedef {import('./src/channels/IChannel.js').LoggerChannelSetupParams} LoggerChannelSetupParams
+ * 
  * @typedef {import('./src/channels/IChannel.js').LoggerChannels} LoggerChannels
- * 
- * @typedef {import('./src/channels/IChannel.js').LoggerChannelConfigs} LoggerChannelConfigs
- * 
- * @typedef {import('./src/channels/IChannel.js').LoggerChannelConfigParams} LoggerChannelConfigParams
- * @typedef {import('./src/channels/IChannel.js').LoggerChannelsConfigParams} LoggerChannelsConfigParams
  */
 
 /**
