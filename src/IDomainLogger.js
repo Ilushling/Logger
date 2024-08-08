@@ -22,13 +22,13 @@
  */
 
 /**
- * @typedef {import('./ILogger.js').LoggerLevelCallback} LoggerLevelCallback
- */
-
-/**
- * @typedef {import('./ILogger.js').LoggerOptions} LoggerOptions
+ * @import {
+ *  LoggerLevelCallback,
+ *  LoggerOptions
+ * } from './ILogger.js'
  * 
- * @typedef {import('./ILevel.js').LoggerLevel} LoggerLevel
- * @typedef {import('./ILevel.js').LoggerNumberLevel} LoggerNumberLevel
- * @typedef {import('./ILevel.js').LoggerStringLevel} LoggerStringLevel
+ * @import {
+ *  LoggerLevel,
+ *  LoggerStringLevel
+ * } from './ILevel.js'
  */

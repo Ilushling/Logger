@@ -5,19 +5,9 @@
  */
 
 /**
- * @typedef {LoggerFactoryProperties} LoggerFactoryParams
+ * @import { ILogger } from './ILogger.js'
+ * @import { LoggerParams } from './Logger.js'
  * 
- * @typedef {object} LoggerFactoryProperties
- * @property {LoggerConstructable} Logger
- * @property {IDomainLoggerConstructable} DomainLogger
- */
-
-/**
- * @typedef {import('./ILogger.js').ILogger} ILogger
- * @typedef {import('./Logger.js').LoggerConstructable} LoggerConstructable
- * @typedef {import('./Logger.js').LoggerParams} LoggerParams
- * 
- * @typedef {import('./IDomainLogger.js').IDomainLogger} IDomainLogger
- * @typedef {import('./DomainLogger.js').IDomainLoggerConstructable} IDomainLoggerConstructable
- * @typedef {import('./DomainLogger.js').DomainLoggerParams} DomainLoggerParams
+ * @import { IDomainLogger } from './IDomainLogger.js'
+ * @import { DomainLoggerParams } from './DomainLogger.js'
  */

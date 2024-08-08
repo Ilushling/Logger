@@ -5,6 +5,29 @@ import LoggerFactory from './src/LoggerFactory.js';
 
 import ConsoleLoggerChannel from './src/channels/Console.js';
 
+/**
+ * @import {
+ *  ILogger,
+ *  LoggerSetupParams,
+ *  LoggerOptions,
+ *  LoggerMetadata
+ * } from './src/ILogger.js'
+ * @import { IDomainLogger, DomainLoggerSetupParams } from './src/IDomainLogger.js'
+ * 
+ * @import { ILoggerFactory } from './src/ILoggerFactory.js'
+ * 
+ * @import {
+ *  ILoggerChannel,
+ *  LoggerChannelSetupParams
+ * } from './src/channels/IChannel.js'
+ * 
+ * @import {
+ *  LoggerLevel,
+ *  LoggerStringLevel,
+ *  LoggerNumberLevel
+ * } from './src/ILevel.js'
+ */
+
 export {
   Logger,
   DomainLogger,
@@ -15,31 +38,29 @@ export {
 };
 
 /**
- * @typedef {import('./src/ILogger.js').ILogger} ILogger
- * @typedef {import('./src/ILogger.js').LoggerSetupParams} LoggerSetupParams
+ * @typedef {ILogger} ILogger
+ * @typedef {LoggerSetupParams} LoggerSetupParams
  * 
- * @typedef {import('./src/IDomainLogger.js').IDomainLogger} IDomainLogger
- * @typedef {import('./src/IDomainLogger.js').DomainLoggerSetupParams} DomainLoggerSetupParams
+ * @typedef {IDomainLogger} IDomainLogger
+ * @typedef {DomainLoggerSetupParams} DomainLoggerSetupParams
  */
 
 /**
- * @typedef {import('./src/ILoggerFactory.js').ILoggerFactory} ILoggerFactory
+ * @typedef {ILoggerFactory} ILoggerFactory
  */
 
 /**
- * @typedef {import('./src/ILevel.js').LoggerLevel} LoggerLevel
- * @typedef {import('./src/ILevel.js').LoggerStringLevel} LoggerStringLevel
- * @typedef {import('./src/ILevel.js').LoggerNumberLevel} LoggerNumberLevel
+ * @typedef {ILoggerChannel} ILoggerChannel
+ * @typedef {LoggerChannelSetupParams} LoggerChannelSetupParams
  */
 
 /**
- * @typedef {import('./src/channels/IChannel.js').ILoggerChannel} ILoggerChannel
- * @typedef {import('./src/channels/IChannel.js').LoggerChannelSetupParams} LoggerChannelSetupParams
- * 
- * @typedef {import('./src/channels/IChannel.js').LoggerChannels} LoggerChannels
+ * @typedef {LoggerLevel} LoggerLevel
+ * @typedef {LoggerStringLevel} LoggerStringLevel
+ * @typedef {LoggerNumberLevel} LoggerNumberLevel
  */
 
 /**
- * @typedef {import('./src/ILogger.js').LoggerOptions} LoggerOptions
- * @typedef {import('./src/ILogger.js').LoggerMetadata} LoggerMetadata
+ * @typedef {LoggerOptions} LoggerOptions
+ * @typedef {LoggerMetadata} LoggerMetadata
  */

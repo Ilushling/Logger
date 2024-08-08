@@ -1,11 +1,21 @@
 /**
+ * @import { ILoggerFactory } from './ILoggerFactory.js'
+ * 
+ * @import { LoggerConstructable } from './Logger.js'
+ * @import { DomainLoggerConstructable } from './DomainLogger.js'
+ */
+
+/**
  * @implements {ILoggerFactory}
  */
 export default class LoggerFactory {
   /**
-   * @typedef {import('./ILoggerFactory.js').ILoggerFactory} ILoggerFactory
-   * @typedef {import('./ILoggerFactory.js').LoggerFactoryParams} LoggerFactoryParams
-   * @typedef {import('./ILoggerFactory.js').LoggerFactoryProperties} LoggerFactoryProperties
+   * @typedef {LoggerFactoryDependencies} LoggerFactoryParams
+   * @typedef {LoggerFactoryDependencies} LoggerFactoryProperties
+   * 
+   * @typedef {object} LoggerFactoryDependencies
+   * @property {LoggerConstructable} Logger
+   * @property {DomainLoggerConstructable} DomainLogger
    */
 
   /** @type {LoggerFactoryProperties['Logger']} */

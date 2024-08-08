@@ -1,4 +1,16 @@
 /**
+ * @import { ILoggerChannel } from './IChannel.js'
+ * 
+ * @import { LoggerOptions } from '../ILogger.js'
+ * 
+ * @import {
+ *  LoggerLevel,
+ *  LoggerStringLevel,
+ *  LoggerNumberLevel
+ * } from '../ILevel.js'
+ */
+
+/**
  * @typedef {new () => ILoggerChannel} ConsoleLoggerChannelConstructable
  */
 
@@ -7,9 +19,8 @@
  */
 export default class ConsoleLoggerChannel {
   /**
-   * @typedef {import('./IChannel.js').ILoggerChannel} ILoggerChannel
-   * 
-   * @typedef {ConsoleLoggerChannelConfigs & ConsoleLoggerChannelConstants} ConsoleLoggerChannelProperties
+   * @typedef {ConsoleLoggerChannelConfigs
+   *  & ConsoleLoggerChannelConstants} ConsoleLoggerChannelProperties
    * 
    * @typedef {object} ConsoleLoggerChannelConfigs
    * @property {LoggerNumberLevel[]} levels
@@ -25,13 +36,17 @@ export default class ConsoleLoggerChannel {
    */
 
   /**
-   * @typedef {import('../ILevel.js').LoggerLevel} LoggerLevel
-   * @typedef {import('../ILevel.js').LoggerStringLevel} LoggerStringLevel
-   * @typedef {import('../ILevel.js').LoggerNumberLevel} LoggerNumberLevel
+   * @typedef {object} Model
+   * @property {() => unknown=} getProperties
+   * @property {() => unknown=} getMaskedProperties
    */
 
   /**
-   * @typedef {import('../ILogger.js').LoggerOptions} LoggerOptions
+   * @typedef {object} PlainError
+   * @property {string} name
+   * @property {string} message
+   * @property {string=} stack
+   * @property {unknown=} cause
    */
 
   // Configs
@@ -91,6 +106,7 @@ export default class ConsoleLoggerChannel {
     this.#lineTab = '  ';
   }
 
+  //#region Configs
   /** @type {ILoggerChannel['setup']} */
   setup({ level, levels, isMask }) {
     if (level != null) {
@@ -101,6 +117,7 @@ export default class ConsoleLoggerChannel {
 
     this.#isMask = isMask;
   }
+  //#endregion
 
   //#region Interface
   /** @type {ILoggerChannel['trace']} */
@@ -371,63 +388,59 @@ export default class ConsoleLoggerChannel {
 
     const typeofValue = typeof value;
 
-    if (typeofValue === 'object') {
-      if (value instanceof Error) {
-        return this.#plainError(value);
-      }
-
-      if (value instanceof Map) {
-        const object = /** @type {Record<PropertyKey, unknown>} */({});
-
-        for (const [key, el] of value) {
-          const plainKey = this.#plainValue(key);
-
-          const serializedKey = typeof plainKey === 'object'
-            ? this.#serizalize(plainKey)
-            : `${plainKey}`;
-
-          object[serializedKey] = this.#plainValue(el);
+    switch (typeofValue) {
+      case 'object':
+        if (value instanceof Error) {
+          return this.#plainError(value);
         }
 
-        return object;
-      }
+        if (value instanceof Map) {
+          const object = /** @type {Record<PropertyKey, unknown>} */({});
 
-      if (value instanceof Set) {
-        return [...value.values()].map(el => this.#plainValue(el));
-      }
+          for (const [key, el] of value) {
+            const plainKey = this.#plainValue(key);
 
-      if (this.#isModel(value)) {
-        return this.#plainModel(value);
-      }
+            const serializedKey = typeof plainKey === 'object'
+              ? this.#serizalize(plainKey)
+              : `${plainKey}`;
 
-      if (this.#isPlainObject(value)) {
-        return Object.entries(value).reduce((acc, [key, el]) => {
-          acc[key] = this.#plainValue(el);
+            object[serializedKey] = this.#plainValue(el);
+          }
 
-          return acc;
-        }, /** @type {Record<PropertyKey, unknown>} */({}));
-      }
+          return object;
+        }
 
-      if (Array.isArray(value)) {
-        return value.map(el => this.#plainValue(el));
-      }
+        if (value instanceof Set) {
+          return [...value.values()].map(el => this.#plainValue(el));
+        }
 
-      return value;
-    }
+        if (this.#isModel(value)) {
+          return this.#plainModel(value);
+        }
 
-    if (typeofValue === 'bigint') {
-      return +value.toString();
-    }
+        if (this.#isPlainObject(value)) {
+          return Object.entries(value).reduce((acc, [key, el]) => {
+            acc[key] = this.#plainValue(el);
 
-    if (typeofValue === 'symbol') {
-      return value.toString();
+            return acc;
+          }, /** @type {Record<PropertyKey, unknown>} */({}));
+        }
+
+        if (Array.isArray(value)) {
+          return value.map(el => this.#plainValue(el));
+        }
+
+        return value;
+      case 'bigint':
+        return +value.toString();
+      case 'symbol':
+        return value.toString();
     }
 
     return value;
   }
 
   /**
-   * @typedef {{ getProperties?: function(): unknown; getMaskedProperties?: function(): unknown; }} Model
    * @param {unknown} value
    * @returns {value is Model}
    */
@@ -441,14 +454,14 @@ export default class ConsoleLoggerChannel {
     }
 
     return 'getProperties' in value && typeof value.getProperties === 'function'
-      && 'getMaskedProperties' in value && typeof value.getMaskedProperties === 'function'
+      || 'getMaskedProperties' in value && typeof value.getMaskedProperties === 'function';
   }
 
   /**
    * @param {Model} model
    */
   #plainModel(model) {
-    const isMask = this.#getIsMask();
+    const isMask = this.#isMask;
 
     if (isMask) {
       return model.getMaskedProperties?.();
@@ -457,18 +470,8 @@ export default class ConsoleLoggerChannel {
     return model.getProperties?.();
   }
 
-  #getIsMask() {
-    return this.#isMask;
-  }
-
   //#region Plain error
   /**
-   * @typedef {{
-   *  name: string;
-   *  message: string;
-   *  stack?: string;
-   *  cause?: unknown;
-   * }} PlainError
    * @param {Error} error
    */
   #plainError(error) {
@@ -519,7 +522,7 @@ export default class ConsoleLoggerChannel {
       return false;
     }
 
-    if (!Object.getPrototypeOf(value)?.isPrototypeOf(Object)) {
+    if (Object.getPrototypeOf(value) !== Object.prototype) {
       return false;
     }
 

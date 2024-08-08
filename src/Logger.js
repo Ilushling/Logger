@@ -1,4 +1,19 @@
 /**
+ * @import {
+ *  ILogger,
+ *  LoggerOptions
+ * } from './ILogger.js'
+ * 
+ * @import { ILoggerChannel } from './channels/IChannel.js'
+ * 
+ * @import {
+ *  LoggerLevel,
+ *  LoggerStringLevel,
+ *  LoggerNumberLevel
+ * } from './ILevel.js'
+ */
+
+/**
  * @typedef {new (params: LoggerParams) => ILogger} LoggerConstructable
  * @typedef {LoggerDependencies} LoggerParams
  */
@@ -8,9 +23,9 @@
  */
 export default class Logger {
   /**
-   * @typedef {import('./ILogger.js').ILogger} ILogger
-   * 
-   * @typedef {LoggerDependencies & LoggerConfigs & LoggerConstants} LoggerProperties
+   * @typedef {LoggerDependencies
+   *  & LoggerConfigs
+   *  & LoggerConstants} LoggerProperties
    * 
    * @typedef {object} LoggerDependencies
    * @property {LoggerChannels} channels
@@ -26,18 +41,7 @@ export default class Logger {
    */
 
   /**
-   * @typedef {import('./channels/IChannel.js').ILoggerChannel} ILoggerChannel
    * @typedef {Record<string, ILoggerChannel>} LoggerChannels
-   */
-
-  /**
-   * @typedef {import('./ILevel.js').LoggerLevel} LoggerLevel
-   * @typedef {import('./ILevel.js').LoggerStringLevel} LoggerStringLevel
-   * @typedef {import('./ILevel.js').LoggerNumberLevel} LoggerNumberLevel
-   */
-
-  /**
-   * @typedef {import('./ILogger.js').LoggerOptions} LoggerOptions
    */
 
   // Dependencies
@@ -92,6 +96,7 @@ export default class Logger {
     this.#levels = [];
   }
 
+  //#region Configs
   /** @type {ILogger['setup']} */
   setup({ level, levels }) {
     if (level != null) {
@@ -101,39 +106,6 @@ export default class Logger {
     }
   }
 
-  //#region Interface
-  /** @type {ILogger['trace']} */
-  async trace(message, options) {
-    await this.#log(this.#NUMBER_LEVELS.trace, message, options);
-  }
-
-  /** @type {ILogger['debug']} */
-  async debug(message, options) {
-    await this.#log(this.#NUMBER_LEVELS.debug, message, options);
-  }
-
-  /** @type {ILogger['info']} */
-  async info(message, options) {
-    await this.#log(this.#NUMBER_LEVELS.info, message, options);
-  }
-
-  /** @type {ILogger['warn']} */
-  async warn(message, options) {
-    await this.#log(this.#NUMBER_LEVELS.warn, message, options);
-  }
-
-  /** @type {ILogger['error']} */
-  async error(message, options) {
-    await this.#log(this.#NUMBER_LEVELS.error, message, options);
-  }
-
-  /** @type {ILogger['fatal']} */
-  async fatal(message, options) {
-    await this.#log(this.#NUMBER_LEVELS.fatal, message, options);
-  }
-  //#endregion
-
-  //#region Configs
   /** @type {ILogger['getLevels']} */
   getLevels() {
     return this.#levels.map(level => this.#numberLevelToString(level));
@@ -158,7 +130,7 @@ export default class Logger {
 
     /** @type {LoggerNumberLevel} */
     let i = numberLevel;
-    let count = this.#MAX_NUMBER_LEVEL + 1;
+    const count = this.#MAX_NUMBER_LEVEL + 1;
     for (; i < count; i++) {
       currentLevels.push(i);
     }
@@ -187,6 +159,68 @@ export default class Logger {
 
       currentLevels.push(numberLevel);
     }
+  }
+  //#endregion
+
+  //#region Interface
+  /** @type {ILogger['trace']} */
+  async trace(message, options) {
+    const level = this.#NUMBER_LEVELS.trace;
+    if (!this.#canLog(level)) {
+      return;
+    }
+
+    await this.#log(level, message, options);
+  }
+
+  /** @type {ILogger['debug']} */
+  async debug(message, options) {
+    const level = this.#NUMBER_LEVELS.debug;
+    if (!this.#canLog(level)) {
+      return;
+    }
+
+    await this.#log(level, message, options);
+  }
+
+  /** @type {ILogger['info']} */
+  async info(message, options) {
+    const level = this.#NUMBER_LEVELS.info;
+    if (!this.#canLog(level)) {
+      return;
+    }
+
+    await this.#log(level, message, options);
+  }
+
+  /** @type {ILogger['warn']} */
+  async warn(message, options) {
+    const level = this.#NUMBER_LEVELS.warn;
+    if (!this.#canLog(level)) {
+      return;
+    }
+
+    await this.#log(level, message, options);
+  }
+
+  /** @type {ILogger['error']} */
+  async error(message, options) {
+    const level = this.#NUMBER_LEVELS.error;
+    if (!this.#canLog(level)) {
+      return;
+    }
+
+    await this.#log(level, message, options);
+  }
+
+  /** @type {ILogger['fatal']} */
+  async fatal(message, options) {
+    const level = this.#NUMBER_LEVELS.fatal;
+    if (!this.#canLog(level)) {
+      return;
+    }
+
+    await this.#log(level, message, options);
   }
   //#endregion
 
@@ -251,10 +285,6 @@ export default class Logger {
    * @param {LoggerOptions=} options
    */
   async #log(numberLevel, message, options) {
-    if (!this.#canLog(numberLevel)) {
-      return;
-    }
-
     const channels = this.#channels;
     if (channels == null) {
       return;

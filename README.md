@@ -17,10 +17,11 @@ Optional
 
 ```js
 /**
- * @typedef {import('mainlog').ILoggerChannel} ILoggerChannel
- * @typedef {import('mainlog').LoggerChannels} LoggerChannels
- * @typedef {import('mainlog').LoggerLevel} LoggerLevel
- * @typedef {import('mainlog').LoggerStringLevel} LoggerStringLevel
+ * @import {
+ *  ILoggerChannel,
+ *  LoggerLevel,
+ *  LoggerStringLevel
+ * } from 'mainlog'
  */
 ```
 
@@ -58,7 +59,7 @@ const consoleChannel = {
 
 #### Create logger
 ```js
-/** @type {LoggerChannels} */
+/** @type {Record<string, ILoggerChannel>} */
 const channels = {
   console: consoleChannel,
   console2: new ConsoleLoggerChannel()

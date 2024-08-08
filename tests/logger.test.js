@@ -4,25 +4,26 @@ import { describe, it } from 'node:test';
 import Logger from '../src/Logger.js';
 import DomainLogger from '../src/DomainLogger.js';
 
-import LoggerFactory from '../src/LoggerFactory.js';
+import Factory from '../src/LoggerFactory.js';
 
 // import ConsoleLoggerChannel from '../src/channels/Console.js';
 
 /**
- * @typedef {import('../src/channels/IChannel.js').ILoggerChannel} ILoggerChannel
- * @typedef {import('../src/channels/IChannel.js').LoggerChannels} LoggerChannels
+ * @import { ILoggerChannel } from '../src/channels/IChannel.js'
  * 
- * @typedef {import('../src/ILevel.js').LoggerLevel} LoggerLevel
- * @typedef {import('../src/ILevel.js').LoggerStringLevel} LoggerStringLevel
+ * @import {
+ *  LoggerLevel,
+ *  LoggerStringLevel
+ * } from '../src/ILevel.js'
  */
 
-const loggerFactory = new LoggerFactory({
+const loggerFactory = new Factory({
   Logger,
   DomainLogger
 });
 
 /**
- * @param {LoggerChannels} channels
+ * @param {Record<string, ILoggerChannel>} channels
  * @param {LoggerLevel} level
  */
 function createLogger(channels, level) {
@@ -41,11 +42,11 @@ function createLogger(channels, level) {
   domainLogger.setup({
     options: {
       metadata: {
-        organization: 'components',
-        context: 'logger',
-        app: 'test',
+        organization: 'Components',
+        context: 'Logger',
+        app: 'Test',
 
-        sourceClass: 'test'
+        sourceClass: 'Test'
       }
     }
   });
@@ -58,7 +59,7 @@ function createLogger(channels, level) {
 
 /**
  * @param {Record<LoggerStringLevel, boolean>} levels
- * @returns {LoggerChannels}
+ * @returns {Record<string, ILoggerChannel>}
  */
 function createChannels(levels) {
   /** @type {ILoggerChannel} */
@@ -88,19 +89,29 @@ function createChannels(levels) {
     setLevels: () => { }
   };
 
+  // const consoleChannel = new ConsoleLoggerChannel();
+
+  // consoleChannel.setup({
+  //   level: 'trace',
+  //   isMask: false
+  // });
+
   return {
-    // console: new ConsoleLoggerChannel(),
+    // console: consoleChannel,
     test: testChannel
   };
 }
 
-// const { logger, domainLogger } = createLogger({
-//   console: new ConsoleLoggerChannel()
-// }, 'trace');
+// const consoleChannel = new ConsoleLoggerChannel();
 
-// logger.setChannelConfigs('console', {
-//   level: 'trace'
+// consoleChannel.setup({
+//   level: 'trace',
+//   isMask: false
 // });
+
+// const { logger, domainLogger } = createLogger({
+//   console: consoleChannel
+// }, 'trace');
 
 // const c3 = new Error('c3', { cause: { test: 3 } });
 // const c2 = new Error('c2', { cause: { c3, test: 2 } });
@@ -108,6 +119,47 @@ function createChannels(levels) {
 // const e = new Error('main', { cause: c1 });
 
 // domainLogger.trace(e);
+// domainLogger.trace({
+//   a: {
+//     test: [{
+//       b: {
+//         getProperties() {
+//           return {
+//             a: 1,
+//             b: {
+//               c: 2
+//             }
+//           }
+//         }
+//       }
+//     }]
+//   },
+//   f: {
+//     g: {
+//       h: {
+//         test: 3,
+//         getProperties() {
+//           return {
+//             a: 4,
+//             b: {
+//               c: 5
+//             }
+//           }
+//         }
+//       }
+//     }
+//   },
+//   test: {
+//     getProperties() {
+//       return {
+//         a: 6,
+//         b: {
+//           c: 7
+//         }
+//       }
+//     }
+//   }
+// });
 
 const correlationId = 'testId';
 describe('Logger', () => {

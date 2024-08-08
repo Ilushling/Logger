@@ -42,11 +42,8 @@
  */
 
 /**
- * @typedef {import('./ILevel.js').LoggerLevel} LoggerLevel
- * @typedef {import('./ILevel.js').LoggerStringLevel} LoggerStringLevel
- * @typedef {import('./ILevel.js').LoggerNumberLevel} LoggerNumberLevel
- */
-
-/**
- * @typedef {import('./channels/IChannel.js').ILoggerChannel} ILoggerChannel
+ * @import {
+ *  LoggerLevel,
+ *  LoggerStringLevel
+ * } from './ILevel.js'
  */
